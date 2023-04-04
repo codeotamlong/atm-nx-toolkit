@@ -1,0 +1,350 @@
+{
+  "dl_path": "download",
+  "sd_path": "sdcard",
+  "cfw": {
+    "description": "ATMOSPHERE on MARIKO EMUNAND (Src: https://rentry.co/MarikoEmuNAND)",
+    "dl_path": "cfw",
+    "sd_path": ".",
+    "component": [
+      {
+        "name": "SX Gear",
+        "link": "https://web.archive.org/web/20210217231219/https://sx.xecuter.com/download/SX_Gear_v1.1.zip",
+        "isDisabled":true,
+        "description": "(Skip this if you use a HWFLY modchip)"
+      },
+      {
+        "name": "Hekate",
+        "repo": "CTCaer/hekate",
+        "regex": [
+          "hekate_ctcaer_.*_Nyx_.*.zip"
+        ],
+        "isDisabled": false
+      },
+      {
+        "name": "Atmosphere & fusee",
+        "repo": "Atmosphere-NX/Atmosphere",
+        "regex": [
+          "atmosphere-.*-master-.*.zip",
+          "fusee.bin"
+        ],
+        "isDisabled": false
+      },
+      {
+        "name": "SigPatches",
+        "link": "https://sigmapatches.coomer.party/sigpatches.zip",
+        "isDisabled": false
+      }
+    ],
+    "config": [
+      {
+        "location": "./bootloader/hekate_ipl.ini",
+        "content": [
+          "[config]",
+          "autoboot=0",
+          "autoboot_list=0",
+          "bootwait=3",
+          "backlight=100",
+          "autohosoff=0",
+          "autonogc=1",
+          "updater2p=0",
+          "bootprotect=0",
+          "",
+          "[Atmosphere CFW]",
+          "payload=bootloader/payloads/fusee.bin",
+          "icon=bootloader/res/icon_payload.bmp",
+          "",
+          "[Warmboot Error Fix]",
+          "fss0=atmosphere/package3",
+          "stock=1",
+          "emummc_force_disable=1",
+          "icon=bootloader/res/icon_switch.bmp"
+        ]
+      },
+      {
+        "location": "./exosphere.ini",
+        "content": [
+          "[exosphere]",
+          "debugmode=1",
+          "debugmode_user=0",
+          "disable_user_exception_handlers=0",
+          "enable_user_pmu_access=0",
+          "blank_prodinfo_sysmmc=0",
+          "blank_prodinfo_emummc=1",
+          "allow_writing_to_cal_sysmmc=0",
+          "log_port=0",
+          "log_baud_rate=115200",
+          "log_inverted=0"
+        ]
+      },
+      {
+        "location": "./atmosphere/hosts/default.txt",
+        "content": [
+          "# Block Nintendo Servers",
+          "127.0.0.1 *nintendo.*",
+          "127.0.0.1 *nintendo-europe.com",
+          "127.0.0.1 *nintendoswitch.*",
+          "95.216.149.205 *conntest.nintendowifi.net",
+          "95.216.149.205 *ctest.cdn.nintendo.net"
+        ]
+      }
+    ]
+  },
+  "payload": {
+    "description": "PAYLOAD(s) on MARIKO EMUNAND (https://rentry.co/DumpFirmware - Optional)",
+    "dl_path": "payload",
+    "sd_path": "bootloader/payloads/",
+    "component":[
+      {
+        "name": "TegraExplorer",
+        "repo": "suchmememanyskill/TegraExplorer",
+        "isDisabled":false,
+        "regex": [
+          "TegraExplorer.bin"
+        ]
+      },
+      {
+        "name": "Lockpick_RCM",
+        "repo": "shchmue/Lockpick_RCM",
+        "isDisabled":false,
+        "regex": [
+          "Lockpick_RCM.bin"
+        ]
+      },
+      {
+        "name": "FirmwareDump Script",
+        "link": "https://github.com/suchmememanyskill/TegraExplorer/files/7643993/FirmwareDump.zip",
+        "isDisabled":false
+      }
+    ]
+  },
+  "homebrew": {
+    "description": "How to set up emuNAND with Atmosphere on Mariko (https://rentry.org/MarikoEmuNAND)",
+    "dl_path": "homebrew",
+    "sd_path": "switch",
+    "component":[
+      {
+        "name": "All In One Switch Updater",
+        "repo": "HamletDuFromage/AIO-switch-updater",
+        "isDisabled":false,
+        "regex": [
+          "aio-switch-updater.zip"
+        ]
+      },
+      {
+        "name": "SimpleModManager",
+        "repo": "nadrino/SimpleModManager",
+        "isDisabled":false,
+        "regex": [
+          "SimpleModManager.nro"
+        ]
+      },
+      {
+        "name": "Tesla-Menu",
+        "repo": "WerWolv/Tesla-Menu",
+        "isDisabled":false,
+        "regex": [
+          "ovlmenu.zip"
+        ]
+      },
+      {
+        "name": "EdiZon-SE",
+        "repo": "tomvita/EdiZon-SE",
+        "isDisabled":false,
+        "regex": [
+          "EdiZon.zip"
+        ]
+      },
+      {
+        "name": "nx-ovlloader",
+        "repo": "WerWolv/nx-ovlloader",
+        "isDisabled":false,
+        "regex": [
+          "nx-ovlloader.zip"
+        ]
+      },
+      {
+        "name": "JKSV",
+        "repo": "J-D-K/JKSV",
+        "isDisabled":false,
+        "regex": [
+          "JKSV.nro"
+        ]
+      },
+      {
+        "name": "SwitchThemeInjector",
+        "repo": "exelix11/SwitchThemeInjector",
+        "isDisabled":true,
+        "regex": [
+          "NXThemesInstaller.nro"
+        ]
+      },
+      {
+        "name": "themezer-nx",
+        "repo": "suchmememanyskill/themezer-nx",
+        "isDisabled":false,
+        "regex": [
+          "themezer-nx.nro"
+        ]
+      },
+      {
+        "name": "Amiigo",
+        "repo": "CompSciOrBust/Amiigo",
+        "isDisabled":false,
+        "regex": [
+          "Amiigo.nro"
+        ]
+      },
+      {
+        "name": "DBI",
+        "repo": "rashevskyv/dbi",
+        "isDisabled":false,
+        "regex": [
+          "dbi.config",
+          "DBI.nro"
+        ]
+      },
+      {
+        "name": "Tinfoil",
+        "link": "https://tinfoil.media/repo/Tinfoil%20Self%20Installer%20%5B050000BADDAD0000%5D%5B12.10%5D%5Bv3%5D.zip",
+        "isDisabled":false,
+        "regex": [
+          "Amiigo.nro"
+        ]
+      }
+    ],
+    "config": [
+      {
+        "location": "./config/SimpleModManager/parameters.ini",
+        "content": [
+          "# This is a config file",
+          "",
+          "# folder where mods are stored",
+          "stored-mods-base-folder = /mods/",
+          "use-gui = 1",
+          "last-preset-used = default",
+          "",
+          "",
+          "########################################",
+          "# preset that can be changed in the app",
+          "preset = default",
+          "",
+          "# base folder where mods are installed",
+          "install-mods-base-folder = /atmosphere/contents/",
+          "########################################",
+          "",
+          "",
+          "########################################",
+          "# preset that can be changed in the app",
+          "preset = sxos",
+          "",
+          "# base folder where mods are installed",
+          "install-mods-base-folder = /sxos/titles/",
+          "########################################",
+          "",
+          "",
+          "########################################",
+          "# preset that can be changed in the app",
+          "preset = root",
+          "",
+          "# base folder where mods are installed",
+          "install-mods-base-folder = /",
+          "########################################",
+          "",
+          "",
+          "# DO NOT TOUCH THIS : used to recognize the last version of the program config",
+          "last-program-version = 2.0.4"
+        ]
+      },
+      {
+        "location": "./atmosphere/config//system_settings.ini",
+        "content": [
+          "[atmosphere]",
+          "; Controls whether dmnt cheats should be toggled on or off by",
+          "; default. 1 = toggled on by default, 0 = toggled off by default.",
+          "dmnt_cheats_enabled_by_default = u8!0x0",
+          "; Controls whether dmnt should always save cheat toggle state",
+          "; for restoration on new game launch. 1 = always save toggles,",
+          "; 0 = only save toggles if toggle file exists.",
+          "dmnt_always_save_cheat_toggles = u8!0x1"
+        ]}
+    ]
+  },
+  "tesla-overlay": {
+    "description": "How to set up emuNAND with Atmosphere on Mariko (https://rentry.org/MarikoEmuNAND)",
+    "dl_path": "overlay",
+    "sd_path": "switch/.overlays/",
+    "component": [
+      {
+        "name": "ovl-sysmodules",
+        "repo": "WerWolv/ovl-sysmodules",
+        "isDisabled":false,
+        "regex": [
+          "ovlSysmodules.ovl"
+        ]
+      },
+      {
+        "name": "QuickNTP",
+        "repo": "nedex/QuickNTP",
+        "isDisabled":false,
+        "regex": [
+          "QuickNTP.ovl"
+        ]
+      },
+      {
+        "name": "ReverseNX-RT",
+        "repo": "masagrator/ReverseNX-RT",
+        "isDisabled":false,
+        "regex": [
+          "ReverseNX-RT_.*.zip"
+        ]
+      },
+      {
+        "name": "emuiibo",
+        "repo": "XorTroll/emuiibo",
+        "isDisabled":true,
+        "regex": [
+          "emuiibo-v.*.zip"
+        ]
+      },
+      {
+        "name": "SimpleModManager ",
+        "repo": "nadrino/SimpleModManager",
+        "isDisabled":false,
+        "regex": [
+          "SimpleModManagerOverlay.ovl"
+        ]
+      },
+      {
+        "name": "EdiZon-Overlay",
+        "repo": "proferabg/EdiZon-Overlay",
+        "isDisabled":false,
+        "regex": [
+          "EdiZon-Overlay.zip"
+        ]
+      }
+    ]
+  },
+  "sys-module": {
+    "description": "How to set up emuNAND with Atmosphere on Mariko (https://rentry.org/MarikoEmuNAND)",
+    "dl_path": "module",
+    "sd_path": ".",
+    "component": [
+      {
+        "name": "sys-con",
+        "repo": "cathery/sys-con",
+        "isDisabled": false,
+        "regex": [
+          "sys-con-.*.zip"
+        ]
+      },
+      {
+        "name": "MissionControl",
+        "repo": "ndeadly/MissionControl",
+        "isDisabled": false,
+        "regex": [
+          "MissionControl-.*-master-.*.zip"
+        ]
+      }
+    ]
+  }
+}
