@@ -40,7 +40,7 @@ def dl_component(component: dict, destination: str):
             return
 
     if "repo" in component:
-        dl_github_latest(component["repo"], destination)
+        dl_github_latest(component, destination)
 
     if "link" in component:
         download_to(component["link"], destination)
@@ -66,11 +66,11 @@ def download_to(url: str, destination: str):
         print("Download failed: status code {}\n{}".format(r.status_code, r.text))
 
 
-def dl_github_latest(repo: str, destination: str):
+def dl_github_latest(component: dict, destination: str):
     if not os.path.exists(destination):
         os.makedirs(destination)  # create folder if it does not exist
 
-    response = requests.get(get_github_api_url(repo))
+    response = requests.get(get_github_api_url(component["repo"]))
     res_data = response.json() if response and response.status_code == 200 else None
 
     if "assets" in res_data:
@@ -114,6 +114,7 @@ def setup_component(full_path: str, destination="."):
             print ("Success")
     return
 
+
 def write_config_ini(src: list, dst: str):
     path = Path(dst)
     print("Write", Base.OKGREEN, len(src), Base.END, "lines(s) to", Base.OKGREEN, path, Base.END)
@@ -123,6 +124,38 @@ def write_config_ini(src: list, dst: str):
         for line in src:
             f.write(line+"\n")  # Writing
         # File closed automatically
+    return
+
+
+def build(segment:list):
+    print(Base.HEADER, Base.BOLD, segment["description"], Base.END)
+
+    segment_dl_path = os.path.join(dl_path, segment["dl_path"] if ("dl_path" in segment) else "./cfw")
+    segment_sd_path = os.path.join(sd_path, segment["sd_path"] if ("sd_path" in segment) else ".")
+
+    print(Base.HEADER, Base.BOLD, "Step 1:", Base.END, end='')
+    print(Base.HEADER, "Download components:", Base.END)
+    for index, component in enumerate(segment["component"]):
+        print(index, ". Download", component["name"])
+        # dl_component(component, segment_sd_path)
+
+    print(Base.HEADER, Base.BOLD, "Step 2:", Base.END, end='')
+    print(Base.HEADER, "Extract these files into the root of your SD card:", Base.END)
+    for item in os.listdir(segment_dl_path):  # loop through items in dir
+        if item.endswith(".zip"):
+            setup_component (os.path.abspath(os.path.join(segment_dl_path, item)), sd_path)
+        else:
+            setup_component (os.path.abspath(os.path.join(segment_dl_path, item)), segment_sd_path)
+
+    print(Base.HEADER, Base.BOLD, "Step 3:", Base.END, end='')
+    print(Base.HEADER, "Create .ini file(s)", Base.END)
+    if "config" in segment:
+        for index, cfg in enumerate(segment["config"]):
+            dst = os.path.join(sd_path, cfg["location"])
+            write_config_ini(cfg["content"], dst)
+    else:
+        print("No need config")
+
     return
 
 # Press the green button in the gutter to run the script.
@@ -141,24 +174,12 @@ if __name__ == '__main__':
         print("Error: %s - %s." % (e.filename, e.strerror))
 
     if "cfw" in CONFIG:
-        print(Base.HEADER, Base.BOLD, CONFIG["cfw"]["description"], Base.END)
+        build(CONFIG["cfw"])
 
         cfw_dl_path = os.path.join(dl_path, CONFIG["cfw"]["dl_path"] if ("dl_path" in CONFIG["cfw"]) else "./cfw")
         cfw_sd_path = os.path.join(sd_path, CONFIG["cfw"]["sd_path"] if ("sd_path" in CONFIG["cfw"]) else ".")
 
-        print(Base.HEADER, Base.BOLD, "Step 1:", Base.END, end='')
-        print(Base.HEADER, "Download components:", Base.END)
-        for index, component in enumerate(CONFIG["cfw"]["component"]):
-            print(index, ". Download", component["name"])
-            # dl_component(component, cfw_dl_path)
-
-        print(Base.HEADER, Base.BOLD, "Step 2:", Base.END, end='')
-        print(Base.HEADER, "Extract these files into the root of your SD card:", Base.END)
-        for item in os.listdir(cfw_dl_path):  # loop through items in dir
-            full_path = os.path.abspath(os.path.join(cfw_dl_path, item))
-            setup_component(full_path, cfw_sd_path)
-
-        print(Base.HEADER, Base.BOLD, "Step 3:", Base.END, end='')
+        print(Base.HEADER, Base.BOLD, "Bonus 1:", Base.END, end='')
         print(Base.HEADER, "Rename hekate_ctcaer_x.x.x.bin to payload.bin.", Base.END)
         ptn = re.compile("hekate_ctcaer_.*.bin")
         for item in os.listdir(cfw_sd_path):  # loop through items in dir
@@ -166,103 +187,21 @@ if __name__ == '__main__':
                 print("Found", item, "=> Rename to payload.bin")
                 os.rename(os.path.join(cfw_sd_path, item), os.path.join(cfw_sd_path, "payload.bin"))
 
-        print(Base.HEADER, Base.BOLD, "Step 4:", Base.END, end='')
+        print(Base.HEADER, Base.BOLD, "Bonus 2:", Base.END, end='')
         print(Base.HEADER, "Move fusee.bin to /bootloader/payloads/ folder.", Base.END)
         if os.path.exists(os.path.join(cfw_dl_path, "fusee.bin")):
             setup_component(os.path.join(cfw_dl_path, "fusee.bin"), os.path.join(sd_path, "bootloader", "payloads", "fusee.bin"))
 
-        print(Base.HEADER, Base.BOLD, "Step 5:", Base.END, end='')
-        print(Base.HEADER, "Create .ini file(s)", Base.END)
-        if "config" in CONFIG["cfw"]:
-            for index, cfg in enumerate(CONFIG["cfw"]["config"]):
-                dst = os.path.join(sd_path, cfg["location"])
-                write_config_ini(cfg["content"], dst)
-
     if "payload" in CONFIG:
-        print(Base.HEADER, Base.BOLD, CONFIG["payload"]["description"], Base.END)
-
-        payload_dl_path = os.path.join(dl_path, CONFIG["payload"]["dl_path"] if (
-                    "dl_path" in CONFIG["payload"]) else "./payload")
-        payload_sd_path = os.path.join(sd_path, CONFIG["payload"]["sd_path"] if (
-                    "sd_path" in CONFIG["payload"]) else "./bootloader/payloads/")
-
-        print(Base.HEADER, Base.BOLD, "Step 1:", Base.END, end='')
-        print(Base.HEADER, "Download components:", Base.END)
-        for index, component in enumerate(CONFIG["payload"]["component"]):
-            print(index, ". Download", component["name"])
-            # dl_component(component, payload_dl_path)
-
-        print(Base.HEADER, Base.BOLD, "Step 2:", Base.END, end='')
-        print(Base.HEADER,  "Place the file named *.bin in your /bootloader/payloads/ folder.", Base.END)
-        for item in os.listdir(payload_dl_path):  # loop through items in dir
-            setup_component(os.path.join(payload_dl_path, item), os.path.join(payload_sd_path, item))
+        build(CONFIG["payload"])
 
     if "homebrew" in CONFIG:
-        print(Base.HEADER, Base.BOLD, CONFIG["homebrew"]["description"], Base.END)
-
-        homebrew_dl_path = os.path.join(dl_path, CONFIG["homebrew"]["dl_path"] if (
-                    "dl_path" in CONFIG["homebrew"]) else "./homebrew")
-        homebrew_sd_path = os.path.join(sd_path, CONFIG["homebrew"]["sd_path"] if ("sd_path" in CONFIG["homebrew"]) else ".")
-
-        print(Base.HEADER, Base.BOLD, "Step 1:", Base.END, end='')
-        print(Base.HEADER, "Download components:", Base.END)
-        for index, component in enumerate(CONFIG["homebrew"]["component"]):
-            print(index, ". Download", component["name"])
-            # dl_component(component, homebrew_dl_path)
-
-        print(homebrew_sd_path)
-        print(Base.HEADER, Base.BOLD, "Step 1:", Base.END, Base.HEADER,
-              "Extract these files into the root of your SD card:", Base.END)
-        for item in os.listdir(homebrew_dl_path):  # loop through items in dir
-            if item.endswith(".zip"):
-                setup_component (os.path.abspath(os.path.join(homebrew_dl_path, item)), sd_path)
-            else:
-                setup_component (os.path.abspath(os.path.join(homebrew_dl_path, item)), homebrew_sd_path)
-
-        if "config" in CONFIG["homebrew"]:
-            for index, cfg in enumerate(CONFIG["homebrew"]["config"]):
-                dst = os.path.join(sd_path, cfg["location"])
-                write_config_ini(cfg["content"], dst)
-    
+        build(CONFIG["homebrew"])
+ 
     if "tesla-overlay" in CONFIG:
-        print(Base.HEADER, Base.BOLD, "TESLA OVERLAY", Base.END)
-        overlay_dl_path = os.path.join(dl_path, CONFIG["tesla-overlay"]["dl_path"] if (
-                    "dl_path" in CONFIG["tesla-overlay"]) else "./overlay")
-        overlay_sd_path = os.path.join(sd_path, CONFIG["tesla-overlay"]["sd_path"] if (
-                    "sd_path" in CONFIG["tesla-overlay"]) else "switch/.overlays/")
-
-        print(Base.HEADER, Base.BOLD, "Step 1:", Base.END, end='')
-        print(Base.HEADER, "Download components:", Base.END)
-        for index, component in enumerate(CONFIG["tesla-overlay"]["component"]):
-            print(index, ". Download", component["name"])
-            # dl_component(component, overlay_dl_path)
-    
-        print(Base.HEADER, Base.BOLD, "Step 1:", Base.END, Base.HEADER,
-              "Extract these files into the root of your SD card:", Base.END)
-
-        for item in os.listdir(overlay_dl_path):  # loop through items in dir
-            if item.endswith(".zip"):
-                setup_component (os.path.abspath(os.path.join(overlay_dl_path, item)), sd_path)
-            else:
-                setup_component (os.path.abspath(os.path.join(overlay_dl_path, item)), overlay_sd_path)
-    
+        build(CONFIG["tesla-overlay"])
+        
     if "sys-module" in CONFIG:
-        print(Base.HEADER, Base.BOLD, "SYS-MODULE", Base.END)
-        module_dl_path = os.path.join(dl_path, CONFIG["sys-module"]["dl_path"] if (
-                "dl_path" in CONFIG["sys-module"]) else "module")
-        module_sd_path = os.path.join(sd_path,
-                                      CONFIG["sys-module"]["sd_path"] if ("sd_path" in CONFIG["sys-module"]) else ".")
-
-        print(Base.HEADER, Base.BOLD, "Step 1:", Base.END, end='')
-        print(Base.HEADER, "Download components:", Base.END)
-        for index, component in enumerate(CONFIG["sys-module"]["component"]):
-            print(index, ". Download", component["name"])
-            # dl_component(component, module_dl_path)
-
-        for item in os.listdir(module_dl_path):  # loop through items in dir
-            if item.endswith(".zip"):
-                setup_component (os.path.abspath(os.path.join(module_dl_path, item)), sd_path)
-            else:
-                setup_component (os.path.abspath(os.path.join(module_dl_path, item)), module_sd_path)
+        build(CONFIG["sys-module"])
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
