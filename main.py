@@ -112,6 +112,7 @@ def setup_component(full_path: str, destination="."):
         shutil.copy(path, destination)
         if os.path.isfile(destination):
             print ("Success")
+
     return
 
 
@@ -128,33 +129,36 @@ def write_config_ini(src: list, dst: str):
 
 
 def build(segment:list):
-    print(Base.HEADER, Base.BOLD, segment["description"], Base.END)
-
+    print(Base.HEADER, Base.BOLD, "###", Base.END)
+    print(Base.HEADER, Base.BOLD, "#", segment["description"], Base.END)
+    print(Base.HEADER, Base.BOLD, "###", Base.END)
     segment_dl_path = os.path.join(dl_path, segment["dl_path"] if ("dl_path" in segment) else "./cfw")
     segment_sd_path = os.path.join(sd_path, segment["sd_path"] if ("sd_path" in segment) else ".")
 
-    print(Base.HEADER, Base.BOLD, "Step 1:", Base.END, end='')
+    
     print(Base.HEADER, "Download components:", Base.END)
     for index, component in enumerate(segment["component"]):
-        print(index, ". Download", component["name"])
-        # dl_component(component, segment_sd_path)
+        print(index+1, ". Download", component["name"])
+        dl_component(component, segment_sd_path)
 
-    print(Base.HEADER, Base.BOLD, "Step 2:", Base.END, end='')
+    
     print(Base.HEADER, "Extract these files into the root of your SD card:", Base.END)
-    for item in os.listdir(segment_dl_path):  # loop through items in dir
+    for index, item in enumerate(os.listdir(segment_dl_path)):  # loop through items in dir
+        print(index+1, ".", end="")
         if item.endswith(".zip"):
-            setup_component (os.path.abspath(os.path.join(segment_dl_path, item)), sd_path)
+            setup_component ((os.path.join(segment_dl_path, item)), sd_path)
         else:
-            setup_component (os.path.abspath(os.path.join(segment_dl_path, item)), segment_sd_path)
+            setup_component ((os.path.join(segment_dl_path, item)), os.path.join(segment_sd_path, item))
 
-    print(Base.HEADER, Base.BOLD, "Step 3:", Base.END, end='')
-    print(Base.HEADER, "Create .ini file(s)", Base.END)
     if "config" in segment:
+        print(Base.HEADER, "Create .ini file(s)", Base.END)
         for index, cfg in enumerate(segment["config"]):
             dst = os.path.join(sd_path, cfg["location"])
+            print(index+1, ". Write", dst)
+            if "description" in cfg:
+                print( cfg["description"])
             write_config_ini(cfg["content"], dst)
-    else:
-        print("No need config")
+
 
     return
 
@@ -179,7 +183,6 @@ if __name__ == '__main__':
         cfw_dl_path = os.path.join(dl_path, CONFIG["cfw"]["dl_path"] if ("dl_path" in CONFIG["cfw"]) else "./cfw")
         cfw_sd_path = os.path.join(sd_path, CONFIG["cfw"]["sd_path"] if ("sd_path" in CONFIG["cfw"]) else ".")
 
-        print(Base.HEADER, Base.BOLD, "Bonus 1:", Base.END, end='')
         print(Base.HEADER, "Rename hekate_ctcaer_x.x.x.bin to payload.bin.", Base.END)
         ptn = re.compile("hekate_ctcaer_.*.bin")
         for item in os.listdir(cfw_sd_path):  # loop through items in dir
@@ -187,7 +190,6 @@ if __name__ == '__main__':
                 print("Found", item, "=> Rename to payload.bin")
                 os.rename(os.path.join(cfw_sd_path, item), os.path.join(cfw_sd_path, "payload.bin"))
 
-        print(Base.HEADER, Base.BOLD, "Bonus 2:", Base.END, end='')
         print(Base.HEADER, "Move fusee.bin to /bootloader/payloads/ folder.", Base.END)
         if os.path.exists(os.path.join(cfw_dl_path, "fusee.bin")):
             setup_component(os.path.join(cfw_dl_path, "fusee.bin"), os.path.join(sd_path, "bootloader", "payloads", "fusee.bin"))

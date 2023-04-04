@@ -38,6 +38,7 @@
     "config": [
       {
         "location": "./bootloader/hekate_ipl.ini",
+        "description": "Setup Hekate",
         "content": [
           "[config]",
           "autoboot=0",
@@ -62,6 +63,7 @@
       },
       {
         "location": "./exosphere.ini",
+        "description":"Setup Exosphere - Hide Serial Number",
         "content": [
           "[exosphere]",
           "debugmode=1",
@@ -78,6 +80,7 @@
       },
       {
         "location": "./atmosphere/hosts/default.txt",
+        "description":"Setup DNS MITM - Block Nintendo Servers",
         "content": [
           "# Block Nintendo Servers",
           "127.0.0.1 *nintendo.*",
@@ -118,7 +121,7 @@
     ]
   },
   "homebrew": {
-    "description": "How to set up emuNAND with Atmosphere on Mariko (https://rentry.org/MarikoEmuNAND)",
+    "description": "HOMEBREW(s) on MARIKO EMUNAND (Src: https://rentry.org/homebrewandmisc)",
     "dl_path": "homebrew",
     "sd_path": "switch",
     "component":[
@@ -215,6 +218,7 @@
     "config": [
       {
         "location": "./config/SimpleModManager/parameters.ini",
+        "description": "Setup SimpleModManager to manage sysmodules (Src: https://rentry.org/ManageSysModules)",
         "content": [
           "# This is a config file",
           "",
@@ -257,6 +261,7 @@
       },
       {
         "location": "./atmosphere/config//system_settings.ini",
+        "description": "Setup to manage cheats",
         "content": [
           "[atmosphere]",
           "; Controls whether dmnt cheats should be toggled on or off by",
@@ -270,7 +275,7 @@
     ]
   },
   "tesla-overlay": {
-    "description": "How to set up emuNAND with Atmosphere on Mariko (https://rentry.org/MarikoEmuNAND)",
+    "description": "TESLA-OVERLAY(s) on MARIKO EMUNAND (Src: https://rentry.org/TeslaOverlay)",
     "dl_path": "overlay",
     "sd_path": "switch/.overlays/",
     "component": [
@@ -325,7 +330,7 @@
     ]
   },
   "sys-module": {
-    "description": "How to set up emuNAND with Atmosphere on Mariko (https://rentry.org/MarikoEmuNAND)",
+    "description": "SYS-MODULES on MARIKO EMUNAND (Personal)",
     "dl_path": "module",
     "sd_path": ".",
     "component": [
