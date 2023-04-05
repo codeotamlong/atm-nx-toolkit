@@ -139,7 +139,7 @@ def build(segment:list):
     print(Base.HEADER, "Download components:", Base.END)
     for index, component in enumerate(segment["component"]):
         print(index+1, ". Download", component["name"])
-        dl_component(component, segment_sd_path)
+        dl_component(component, segment_dl_path)
 
     
     print(Base.HEADER, "Extract these files into the root of your SD card:", Base.END)
