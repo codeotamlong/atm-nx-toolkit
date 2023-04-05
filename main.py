@@ -11,6 +11,7 @@ from string import Template
 from pathlib import Path
 
 import requests
+from clint.textui import progress
 
 
 class Base:
@@ -57,9 +58,12 @@ def download_to(url: str, destination: str):
 
     r = requests.get(url, stream=True)
     if r.ok:
+
         print("saving to", os.path.abspath(file_path))
         with open(file_path, 'wb') as f:
-            for chunk in r.iter_content(chunk_size=1024 * 8):
+            total_length = int(r.headers.get('content-length'))
+            for chunk in progress.bar(r.iter_content(chunk_size=2391975), expected_size=(total_length/1024) + 1):
+                # for chunk in r.iter_content(chunk_size=1024 * 8):
                 if chunk:
                     f.write(chunk)
                     f.flush()

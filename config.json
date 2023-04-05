@@ -208,8 +208,8 @@
       },
       {
         "name": "Tinfoil",
-        "link": "https://tinfoil.media/repo/Tinfoil%20Self%20Installer%20%5B050000BADDAD0000%5D%5B12.10%5D%5Bv3%5D.zip",
-        "isDisabled":false,
+        "link": "https://tinfoil.media/repo/Tinfoil%20Self%20Installer%20%5B050000BADDAD0000%5D%5B16.0%5D%5Bv0%5D.zip",
+        "isDisabled":true,
         "regex": [
           "Amiigo.nro"
         ]
