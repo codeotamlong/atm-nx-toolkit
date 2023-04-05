@@ -1,8 +1,9 @@
 {
   "dl_path": "download",
   "sd_path": "sdcard",
+  "description": "MARIKO EMUNAND SDCARD AUTO BUILD (Src: https://rentry.cc/SwitchHackingIsEasy)",
   "cfw": {
-    "description": "ATMOSPHERE on MARIKO EMUNAND (Src: https://rentry.co/MarikoEmuNAND)",
+    "description": "ATMOSPHERE (Src: https://rentry.co/MarikoEmuNAND)",
     "dl_path": "cfw",
     "sd_path": ".",
     "component": [
@@ -93,7 +94,7 @@
     ]
   },
   "payload": {
-    "description": "PAYLOAD(s) on MARIKO EMUNAND (https://rentry.co/DumpFirmware - Optional)",
+    "description": "PAYLOAD(s) (https://rentry.co/DumpFirmware - Optional)",
     "dl_path": "payload",
     "sd_path": "bootloader/payloads/",
     "component":[
@@ -121,7 +122,7 @@
     ]
   },
   "homebrew": {
-    "description": "HOMEBREW(s) on MARIKO EMUNAND (Src: https://rentry.org/homebrewandmisc)",
+    "description": "HOMEBREW(s) (Src: https://rentry.org/homebrewandmisc)",
     "dl_path": "homebrew",
     "sd_path": "switch",
     "component":[
@@ -275,7 +276,7 @@
     ]
   },
   "tesla-overlay": {
-    "description": "TESLA-OVERLAY(s) on MARIKO EMUNAND (Src: https://rentry.org/TeslaOverlay)",
+    "description": "TESLA-OVERLAY(s) (Src: https://rentry.org/TeslaOverlay)",
     "dl_path": "overlay",
     "sd_path": "switch/.overlays/",
     "component": [
@@ -330,7 +331,7 @@
     ]
   },
   "sys-module": {
-    "description": "SYS-MODULES on MARIKO EMUNAND (Personal)",
+    "description": "SYS-MODULES (Personal)",
     "dl_path": "module",
     "sd_path": ".",
     "component": [

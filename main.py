@@ -11,7 +11,7 @@ from string import Template
 from pathlib import Path
 
 import requests
-from clint.textui import progress
+from clint.textui import progress, puts, indent, colored
 
 
 class Base:
@@ -104,12 +104,9 @@ def get_github_api_url(repo: str):
 
 def setup_component(full_path: str, destination="."):
     path = Path(full_path)
-    if path.suffix == ".zip":
-        print("Extract", end="")
-    else:
-        print("Move", end="")
-    print(Base.OKGREEN, path.name, Base.END, "to",
-          Base.OKGREEN, destination, Base.END)
+    with indent(quote="-"):
+        puts(s=("Extract " if path.suffix == ".zip" else "Move ") +
+             path.name+" to "+destination)
 
     if path.suffix == ".zip":
         zip_obj = zipfile.ZipFile(path)  # create zipfile object
@@ -119,15 +116,15 @@ def setup_component(full_path: str, destination="."):
     if (path.suffix in [".bin", ".nro", ".config", ".ovl"]):
         shutil.copy(path, destination)
         if os.path.isfile(destination):
-            print("Success")
+            puts(s=colored.yellow(("Success")))
 
     return
 
 
 def write_config_ini(src: list, dst: str):
     path = Path(dst)
-    print("Write", Base.OKGREEN, len(src), Base.END,
-          "lines(s) to", Base.OKGREEN, path, Base.END)
+
+    puts(s="Write "+str(len(src))+"lines(s) to"+str(path))
 
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(dst, "w") as f:  # Opens file and casts as f
@@ -138,43 +135,50 @@ def write_config_ini(src: list, dst: str):
 
 
 def build(segment: list):
-    print(Base.HEADER, Base.BOLD, "###", Base.END)
-    print(Base.HEADER, Base.BOLD, "#", segment["description"], Base.END)
-    print(Base.HEADER, Base.BOLD, "###", Base.END)
+    tab = 2
+    with indent(quote="#"):
+        puts(s=colored.blue(segment["description"]))
+
     segment_dl_path = os.path.join(
         dl_path, segment["dl_path"] if ("dl_path" in segment) else "./cfw")
     segment_sd_path = os.path.join(
         sd_path, segment["sd_path"] if ("sd_path" in segment) else ".")
 
-    print(Base.HEADER, "Download components:", Base.END)
-    for index, component in enumerate(segment["component"]):
-        print(index+1, ". Download", component["name"])
-        dl_component(component, segment_dl_path)
+    with indent(indent=tab):
+        puts(s=colored.green("Download components:"))
+        for component in (segment["component"]):
+            with indent(quote="-"):
+                puts(s="Download "+component["name"])
+                # dl_component(component, segment_dl_path)
 
-    print(Base.HEADER, "Extract these files into the root of your SD card:", Base.END)
-    # loop through items in dir
-    for index, item in enumerate(os.listdir(segment_dl_path)):
-        print(index+1, ".", end="")
-        if item.endswith(".zip"):
-            setup_component((os.path.join(segment_dl_path, item)), sd_path)
-        else:
-            setup_component((os.path.join(segment_dl_path, item)),
-                            os.path.join(segment_sd_path, item))
+        puts(s=colored.green("Place file(s) in correct location in SD card:"))
+        for item in (os.listdir(segment_dl_path)):
 
-    if "config" in segment:
-        print(Base.HEADER, "Create .ini file(s)", Base.END)
-        for index, cfg in enumerate(segment["config"]):
-            dst = os.path.join(sd_path, cfg["location"])
-            print(index+1, ". Write", dst)
-            if "description" in cfg:
-                print(cfg["description"])
-            write_config_ini(cfg["content"], dst)
+            if item.endswith(".zip"):
+                setup_component(
+                    (os.path.join(segment_dl_path, item)), sd_path)
+            else:
+                setup_component((os.path.join(segment_dl_path, item)),
+                                os.path.join(segment_sd_path, item))
+
+        if "config" in segment:
+            puts(s=colored.green("Create .ini file(s)"))
+            for cfg in (segment["config"]):
+                dst = os.path.join(sd_path, cfg["location"])
+                with indent(quote="-"):
+                    puts(s=cfg["description"]
+                         if "description" in cfg else dst)
+                write_config_ini(cfg["content"], dst)
 
     return
 
 
-if __name__ == '__main__':
+def main():
+    return
 
+
+if __name__ == '__main__':
+    main()
     with open('config.json', 'r') as config_file:
         CONFIG = json.load(config_file)
 
@@ -182,6 +186,9 @@ if __name__ == '__main__':
         "dl_path" in CONFIG) else "./download")
     sd_path = os.path.join(CONFIG["sd_path"] if (
         "sd_path" in CONFIG) else "./sdcard")
+
+    if "description" in CONFIG:
+        puts(colored.magenta('> '+CONFIG["description"]+' <'))
 
     # Try to remove the tree; if it fails, throw an error using try...except.
     try:
