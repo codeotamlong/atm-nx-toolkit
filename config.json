@@ -1,7 +1,7 @@
 {
   "master": {
-    "dl_path": "./download",
-    "sd_path": "./sdcard",
+    "dl_root": "./download",
+    "sd_root": "./sdcard",
     "description": "MARIKO EMUNAND SDCARD AUTO BUILD (Src: https://rentry.cc/SwitchHackingIsEasy)"
   },
   "cfw": {
@@ -13,7 +13,7 @@
         "name": "SX Gear",
         "url": "https://web.archive.org/web/20210217231219/https://sx.xecuter.com/download/SX_Gear_v1.1.zip",
         "isDisabled": true,
-        "description": "(Skip this if you use a HWFLY modchip)"
+        "description": "Skip this if you use a HWFLY modchip"
       },
       {
         "name": "Hekate",
@@ -98,29 +98,28 @@
         ]
       }
     ],
-    "external": {
-      "path": "custom.py",
-      "function": [
-        {
-          "description": "Rename hekate_ctcaer_x.x.x.bin to payload.bin.",
-          "name": "rename",
-          "args": {
-            "regex": "hekate_ctcaer_.*.bin",
-            "src": "./sdcard",
-            "dst": "payload.bin"
-          }
-        },
-        {
-          "description": "Move fusee.bin to /bootloader/payloads/ folder.",
-          "name": "copy",
-          "args": {
-            "regex": "fusee.bin",
-            "src": "./download/cfw",
-            "dst": "./sdcard/bootloader/payloads/"
-          }
+    "external":[
+      {
+        "path": "custommm.py",
+        "description": "Rename hekate_ctcaer_x.x.x.bin to payload.bin.",
+        "function": "rename",
+        "args": {
+          "regex": "hekate_ctcaer_.*.bin",
+          "src": "./sdcard",
+          "dst": "payload.bin"
         }
-      ]
-    }
+      },
+      {
+        "path": "custommm.py",
+        "description": "Move fusee.bin to /bootloader/payloads/ folder.",
+        "function": "copy",
+        "args": {
+          "regex": "fusee.bin",
+          "src": "./download/cfw",
+          "dst": "./sdcard/bootloader/payloads/"
+        }
+      }
+    ]
   },
   "payload": {
     "description": "PAYLOAD(s) (https://rentry.co/DumpFirmware - Optional)",

@@ -31,9 +31,9 @@ def copy(args):
     if (regex is None) or (src is None) or (dst is None):
         puts(s="Need regex, src, dst in args")
         return
-    puts(s="Copy "+regex+" from "+src+" to "+dst)
+    puts(s="Copy "+regex+" from "+src+" to "+dst, newline=False)
 
     if os.path.exists(os.path.join(src, regex)):
         shutil.copy(os.path.join(src, regex), os.path.join(dst, regex))
         if os.path.isfile(os.path.join(dst, regex)):
-            puts(s=colored.yellow(("Success")))
+            puts(s=colored.yellow((" => Success")))
