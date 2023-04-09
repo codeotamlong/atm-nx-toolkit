@@ -1,0 +1,18 @@
+[
+    {
+        "url":"https://darthsternie.net/switch-firmwares/",
+        "table":[
+            {
+                "class":"tablepress tablepress-id-53",
+                "name": "Official Global Firmwares"
+            },
+            {
+                "class":"tablepress tablepress-id-80",
+                "name":"Official China Firmwares"
+            }
+        ],
+        "row":[
+
+        ]
+    }
+]
