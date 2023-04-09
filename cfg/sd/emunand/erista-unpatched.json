@@ -3,10 +3,10 @@
     "tab": 2,
     "dl": "./download",
     "sd": "./sdcard",
-    "description": "MARIKO EMUNAND SDCARD AUTO BUILD (Src: https://rentry.cc/SwitchHackingIsEasy)"
+    "description": "ERISTA EMUNAND SDCARD AUTO BUILD (Src: https://rentry.cc/SwitchHackingIsEasy)"
   },
   "cfw": {
-    "description": "ATMOSPHERE (Src: https://rentry.co/MarikoEmuNAND)",
+    "description": "ATMOSPHERE (Src: https://rentry.org/EristaSXCoreEmuNAND)",
     "dl": "cfw",
     "sd": ".",
     "component": [
@@ -60,13 +60,7 @@
           "",
           "[Atmosphere CFW]",
           "payload=bootloader/payloads/fusee.bin",
-          "icon=bootloader/res/icon_payload.bmp",
-          "",
-          "[Warmboot Error Fix]",
-          "fss0=atmosphere/package3",
-          "stock=1",
-          "emummc_force_disable=1",
-          "icon=bootloader/res/icon_switch.bmp"
+          "icon=bootloader/res/icon_payload.bmp"
         ]
       },
       {
