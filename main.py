@@ -1,8 +1,7 @@
 #!/usr/bin/python
 import os
 import json
-from clint.textui import puts, colored
-from clint.textui import columns
+from clint.textui import prompt, puts, colored, validators, columns
 
 import src.sd.setup
 import src.fw.download
@@ -31,99 +30,71 @@ def display_banner():
     
 def get_choice():
     # Let users know what they can do.
-    puts(columns(
-            [(colored.clean('[1] SD Setup')), 50], 
-            [(colored.clean('[2] Firmware Download')), 50]
-        ))
-    puts(columns(
-            [(colored.clean('[3] Splash Atmosphere')), 50], 
-            [(colored.clean('[4] Cheat management')), 50]
-        ))
-    puts(columns(
-            [(colored.clean('[q] Quit')), 50]
-        ))
-    
-    return input("What would you like to do? ")
+
+    inst_options = [{'selector':'1','prompt':'SD Setup','return':'sd-setup'},
+                    {'selector':'2','prompt':'Firmware Download','return':'fw-dload'},
+                    {'selector':'3','prompt':'Splash Atmosphere','return':'atm-splash'},
+                    {'selector':'4','prompt':'Cheat Management','return':'cheat-mng'},
+                    {'selector':'q','prompt':'Quit','return':'quit'}]
+
+    return prompt.options("What would you like to do?", inst_options)
 
 def get_nand_choice():
      # Let users know what they can do.
 
-    puts(columns(
-            [(colored.clean('[1] EmuNAND')), 50], 
-            [(colored.clean('[2] SysNAND')), 50]
-        ))
-    
-    i =  input("What would you like to do? ")
+    inst_options = [{'selector':'1','prompt':'EmuNAND','return':'emunand'},
+                    {'selector':'2','prompt':'SysNAND','return':'sysnand'}]
 
-    if i=='1':
-        return "emunand"
-    elif i=='2':
-        return "sysnand"
-    else:
-        return None
+    return prompt.options("What would you like to do?", inst_options)
 
 def get_nsw_codename():
     # Let users know what they can do.
-    puts("\n[1] Switch v1 (Unpatched): Need RCM Loader")
-    puts(  "[2] Switch v1 (Patched)  : Need hard-mod (solderring) SX Core / HWFLY.")
-    puts(  "[3] Switch v2/Lite/OLED  : Need hard-mod (solderring) HWFLY")
-    
-    i =  input("What would you like to do? ")
 
-    if i=='1':
-        return "erista-unpatched"
-    elif i=='2':
-        return "erista-patched"
-    elif i=='3':
-        return "mariko"
-    else:
-        return None
+    inst_options = [{'selector':'1','prompt':'Switch v1 (Unpatched): Need RCM Loader','return':'erista-unpatched'},
+                    {'selector':'2','prompt':'Switch v1 (Patched)  : Need hard-mod (solderring) SX Core / HWFLY','return':'erista-patched'},
+                    {'selector':'3','prompt':'Switch v2/Lite/OLED  : Need hard-mod (solderring) HWFLY','return':'mariko'}]
+
+    return prompt.options("What would you like to do?", inst_options)
 
 def get_fw_site_choice(sites):
+    inst_options = []
+    
     for (i, s) in enumerate(sites):
-        puts(s="["+str(i)+"] "+ s['url'])
+        inst_options.append({'selector':i,'prompt': s["url"],'return': i})
 
-    i =  input("What would you like to do? ")
-    return sites[int(i)]
+    choice = prompt.options("What would you like to do?", inst_options)
+    return sites[int(choice)]
 
 def get_fw_table_choice(site):
     # Let users know what they can do.
-    for (i, t) in enumerate(site["table"]):
-        puts(s="["+str(i)+"] "+ t['name'])
+    inst_options = []
 
-    i =  input("What would you like to do? ")
-    return site["table"][int(i)]
+    for (i, t) in enumerate(site["table"]):
+        inst_options.append({'selector':i,'prompt': t['name'],'return': i})
+        # puts(s="["+str(i)+"] "+ t['name'])
+
+    choice = prompt.options("What would you like to do?", inst_options)
+    return site["table"][int(choice)]
 
 def get_fw_version_choice(table):
     # Let users know what they can do.
-    puts(columns(
-            [(colored.green("No.")), 5],
-            [(colored.green("Version")), 40],
-            [(colored.green("MD5")), 50]
-        ))
-    for (i, fw) in enumerate(table):
-        puts(columns(
-            [(colored.clean(i)), 5],
-            [(colored.clean(fw.version)), 40],
-            [(colored.clean(fw.md5)), 50]
-        ))
-        # print(i, fw.version, fw.md5, fw.filesize, fw.mega_nz, fw.archive_org)
-    
-    i =  input("What would you like to do? ")
+    inst_options = []
 
-    return table[int(i)]
+    for (i, fw) in enumerate(table):
+        inst_options.append({'selector':i,'prompt': '%-*s %s'%(40, fw.version, fw.md5),'return': i})
+        # puts(s="["+str(i)+"] "+ t['name'])
+
+    choice = prompt.options("What would you like to do?", inst_options)
+    return table[int(choice)]
 
 def get_fw_dload_option(fw):
     puts("%s - %s - %s" %(fw.version, fw.filesize, fw.md5))
-    print("[1]",fw.mega_nz)
-    print("[2]", fw.archive_org)
-    i =  input("What would you like to do? ")
-    if i=='1':
-        return fw.mega_nz
-    elif i=='2':
-        return fw.archive_org
-    else:
-        return None
+
+    inst_options = [{'selector':'1','prompt':"mega.nz - Open web-browser to download manually",'return':fw.mega_nz},
+                    {'selector':'2','prompt':"archive.org - Download automatically",'return':fw.archive_org}]
+
+    choice = prompt.options("What would you like to do?", inst_options)
+    return choice
 
 
 ### MAIN PROGRAM ###
@@ -136,7 +107,7 @@ while choice != 'q':
     display_banner()
     choice = get_choice()
     
-    if choice == '1':
+    if choice == 'sd-setup':
         nand = get_nand_choice()
         nsw = get_nsw_codename()
         if (nand is None) or (nsw is None):
@@ -148,7 +119,7 @@ while choice != 'q':
             "nand": nand
         })
         input("Press Enter to continue...")
-    if choice == '2':
+    if choice == 'fw-dload':
         path = os.path.join(
             "/".join([".", "cfg", "fw.json"]))
         with open(path, 'r') as config_file:
@@ -160,7 +131,13 @@ while choice != 'q':
             dl_link = get_fw_dload_option(version)
             src.fw.download.open_(dl_link)
         input("Press Enter to continue...")
-    elif choice == 'q':
+    elif choice == 'atm-splash':
+        print("\nThanks for playing. Bye.")
+        input("Press Enter to continue...")
+    elif choice == 'cheat-mng':
+        print("\nThanks for playing. Bye.")
+        input("Press Enter to continue...")
+    elif choice == 'quit':
         print("\nThanks for playing. Bye.")
         input("Press Enter to continue...")
     else:
