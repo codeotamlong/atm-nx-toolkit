@@ -1,10 +1,4 @@
 {
-  "root": {
-    "tab": 2,
-    "dl": "./download",
-    "sd": "./sdcard",
-    "description": "MARIKO EMUNAND SDCARD AUTO BUILD (Src: https://rentry.cc/SwitchHackingIsEasy)"
-  },
   "cfw": {
     "description": "ATMOSPHERE (Src: https://rentry.co/MarikoEmuNAND)",
     "dl": "cfw",

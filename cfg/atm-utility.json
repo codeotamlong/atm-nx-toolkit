@@ -1,0 +1,6 @@
+[
+    {
+        "repo":"friedkeenan/switch-logo-patcher",
+        "desc":"Generate patches to change the Switch logo on boot"
+    }
+]

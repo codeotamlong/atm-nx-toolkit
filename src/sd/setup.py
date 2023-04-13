@@ -97,7 +97,6 @@ class Config:
                         puts(s="Custom function from external file")
                 puts(s="Call " + self.function+"() in "+self.path)
                 getattr(mymodule, self.function)(self.args)
-                
 
         class Ini:
             def __init__(self, root, ini, **kwargs):
@@ -248,11 +247,10 @@ class Config:
             self.sd = config["sd"] if "sd" in config else ""
             self.tab = config["tab"] if "tab" in config else 2
             self.description = config["description"] if "description" in config else ""
-            
 
-    def __init__(self, config):
+    def __init__(self, root, config):
 
-        self.root = self.Root(config["root"] if "root" in config else {})
+        self.root = self.Root(root)
 
         puts(colored.magenta('> '+self.root.description+' <'))
         puts(colored.magenta('> Download: '+self.root.dl+' <'))
@@ -265,7 +263,6 @@ class Config:
             else:
                 self.seg.append(self.Segment(self.root, config))
                 # s.build()
-
 
     def build(self):
         print("Auto setup sd-card as config in: ", self.root.sd)
@@ -280,13 +277,7 @@ class Config:
             puts(s=colored.cyan(str(index+1)+". "), newline=False)
             seg.build()
 
-        
 
-
-def run(cfg):
-    path = os.path.join(
-        "/".join(["cfg", "sd", cfg["nand"], cfg["nsw"]+".json"]))
-    with open(path, 'r') as config_file:
-        cfg = json.load(config_file)
-        config = Config(cfg)
-        config.build()
+def run(root, cfg):
+    config = Config(root, cfg)
+    config.build()

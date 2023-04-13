@@ -1,0 +1,9 @@
+{
+    "tab": 2,
+    "dl": "./download",
+    "sd": "./sdcard",
+    "custom-logo":{
+        "src":"./assets/switch-logo",
+        "dst":"atmosphere/exefs_patches"
+    }
+}
