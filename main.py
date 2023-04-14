@@ -7,6 +7,8 @@ from clint.textui import prompt, puts, colored, validators, columns
 import src.sd.setup
 import src.fw.download
 import src.utility.launcher
+import src.cheat.manager
+import src.misc
 
 ### FUNCTIONS ###
 
@@ -35,16 +37,27 @@ def display_banner():
 def get_choice():
     # Let users know what they can do.
 
-    inst_options = [{'selector': '1', 'prompt': 'SD Setup', 'return': 'sd-setup'},
-                    {'selector': '2', 'prompt': 'Firmware Download',
-                        'return': 'fw-dload'},
-                    {'selector': '3', 'prompt': 'Atmosphere-NS Utilities',
-                        'return': 'atm-utility'},
-                    {'selector': '4', 'prompt': 'Cheat Management',
-                        'return': 'cheat-mng'},
-                    {'selector': 'q', 'prompt': 'Quit', 'return': 'quit'}]
+    # inst_options = [{'selector': '1', 'prompt': 'SD Setup', 'return': 'sd-setup'},
+    #                 {'selector': '2', 'prompt': 'Firmware Download',
+    #                     'return': 'fw-dload'},
+    #                 {'selector': '3', 'prompt': 'Atmosphere-NS Utilities',
+    #                     'return': 'atm-utility'},
+    #                 {'selector': '4', 'prompt': 'Cheat Management',
+    #                     'return': 'cheat-mng'},
+    #                 {'selector': 'q', 'prompt': 'Quit', 'return': 'quit'}]
 
-    return prompt.options("What would you like to do?", inst_options)
+    # return prompt.options("What would you like to do?", inst_options)
+    return src.misc.get_choice(
+        question="What would you like to do?",
+        options=[
+            {'selector': '1', 'desc': 'SD Setup', 'return': 'sd-setup'},
+            {'selector': '2', 'desc': 'Firmware Download', 'return': 'fw-dload'},
+            {'selector': '3', 'desc': 'Atmosphere-NS Utilities', 'return': 'atm-utility'},
+            {'selector': '4', 'desc': 'Cheat Management','return': 'cheat-mng'},
+            {'selector': 'q', 'desc': 'Quit', 'return': 'quit'}
+        ],
+        answer="My choice"
+    )
 
 
 def get_nand_choice():
@@ -155,7 +168,9 @@ while choice != 'quit':
         src.utility.launcher.launch(root_cfg, cfg)
         input("Press Enter to continue...")
     elif choice == 'cheat-mng':
-        print("\nThanks for playing. Bye.")
+        with open(Path("./cfg/atm-utility.json"), 'r') as config_file:
+            cfg = json.load(config_file)
+        src.cheat.manager.main()
         input("Press Enter to continue...")
     elif choice == 'quit':
         print("\nThanks for playing. Bye.")

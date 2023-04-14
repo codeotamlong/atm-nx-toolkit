@@ -14,6 +14,8 @@ from urllib.parse import unquote
 import requests
 from clint.textui import progress, puts, indent, colored
 
+from .. import misc
+
 
 class Config:
     class Segment:
@@ -48,24 +50,24 @@ class Config:
             # self.External(segment["external"]) if "external" in segment else []
 
         def build(self):
-            puts(s=colored.blue(self.description))
+            misc.print_level1(s=(self.description))
             puts(s='Download path: '+self.dl)
             puts(s=' SD card path: '+self.sd)
 
             if (len(self.component) > 0):
-                puts(s=colored.cyan("Setup component(s)"))
+                misc.print_level2(s=("Setup component(s)"))
 
                 for (component) in (self.component):
                     component.download()
                     component.build()
 
             if (len(self.ini) > 0):
-                puts(s=colored.cyan("Create .ini file(s)"))
+                misc.print_level2(s=("Create .ini file(s)"))
                 for ini in self.ini:
                     ini.build()
 
             if (len(self.external) > 0):
-                puts(s=colored.cyan("Run custom script(s) from external file"))
+                misc.print_level2(s=("Run custom script(s) from external file"))
                 for ext in self.external:
                     ext.run()
 
@@ -108,7 +110,7 @@ class Config:
 
             def build(self):
                 with indent(indent=self.root.tab,):
-                    puts(s=colored.green("Create ")+self.sd)
+                    misc.print_level3(s=("Create ")+self.sd)
 
                 src = self.line
                 dst = Path(self.sd)
@@ -155,7 +157,7 @@ class Config:
 
                 if len(self.name) > 0:
                     with indent(indent=self.root.tab):
-                        puts(s=colored.green("- Download ")+self.name)
+                        misc.print_level3(s=("- Download ")+self.name)
 
                 if len(self.description) > 0:
                     puts(s=self.description)
@@ -166,79 +168,32 @@ class Config:
 
                 if self.github is not None:
                     puts(s="Repo: github/"+self.github.repo)
-                    self.download_from_github()
+                    self.filename = misc.download_github(repo = self.github.repo, query = self.github.query, regex=self.github.regex, dst=self.dl)
+                    # self.download_from_github()
                 elif len(self.url) > 0:
                     puts(s="URL: "+self.url)
-                    self.download_from_url()
+                    self.filename = misc.download(url = self.url, dst = self.dl)
+                    # self.download_from_url()
                 return
-
-            def download_from_url(self, **kwargs):
-                url = kwargs["url"] if "url" in kwargs else self.url
-                filename = url.split('/')[-1].replace(" ", "_")
-
-                dst = kwargs["dst"] if "dst" in kwargs else os.path.join(
-                    self.dl, filename)
-
-                r = requests.get(url, stream=True)
-                if r.ok:
-                    puts(s="Save "+filename+" to "+dst)
-                    self.filename.append(filename)
-                    with open(dst, 'wb') as f:
-                        total_length = int(r.headers.get('content-length'))
-                        for chunk in progress.bar(r.iter_content(chunk_size=2391975), expected_size=(total_length/1024) + 1):
-                            if chunk:
-                                f.write(chunk)
-                                f.flush()
-                                os.fsync(f.fileno())
-                else:  # HTTP status code 4XX/5XX
-                    print("Download failed: status code {}\n{}".format(
-                        r.status_code, r.text))
-                return
-
-            def download_from_github(self):
-                if not os.path.exists(self.dl):
-                    os.makedirs(self.dl)  # create folder if it does not exist
-
-                response = requests.get(self.get_github_api_url())
-                res_data = response.json() if response and response.status_code == 200 else None
-
-                if "assets" in res_data:
-                    for assets in res_data["assets"]:
-                        for p in self.github.regex:
-                            pattern = re.compile(p)
-                            if pattern.match(assets["name"]):
-                                puts(s=colored.yellow(
-                                    "Download: ")+assets["name"])
-                                self.download_from_url(url=unquote(
-                                    assets["browser_download_url"]))
-
-            def get_github_api_url(self):
-                api_template = Template(
-                    "https://api.github.com/repos/$repo/$query")
-                url = api_template.substitute({
-                    'repo': self.github.repo,
-                    'query': self.github.query
-                })
-                return url
 
             def build(self):
                 for file in self.filename:
                     full_path = os.path.join(self.dl, file)
                     src = Path(full_path)
                     if file.endswith(".zip"):
-                        puts(s=colored.yellow("Extract ") +
+                        misc.print_success(s=("Extract ") +
                              src.name+" to "+self.root.sd)
                         zip_obj = zipfile.ZipFile(src)  # create zipfile object
                         zip_obj.extractall(self.root.sd)  # extract file to dir
                         zip_obj.close()
                     elif (src.suffix in [".bin", ".nro", ".config", ".ovl"]):
-                        puts(s=colored.yellow("Move ") + src.name +
+                        misc.print_success(s=("Move ") + src.name +
                              " to "+self.sd, newline=False)
                         shutil.copy(src, os.path.join(self.sd, file))
                         if os.path.isfile(os.path.join(self.sd, file)):
-                            puts(s=colored.green((" => Success")))
+                            misc.print_level3(s=((" => Success")))
                     else:
-                        puts(s=colored.red(" => Unknown file type. Skip!"))
+                        misc.print_error(s=(" => Unknown file type. Skip!"))
                 return
 
     class Root(object):
@@ -252,9 +207,9 @@ class Config:
 
         self.root = self.Root(root)
 
-        puts(colored.magenta('> '+self.root.description+' <'))
-        puts(colored.magenta('> Download: '+self.root.dl+' <'))
-        puts(colored.magenta('>  SD card: '+self.root.sd+' <'))
+        misc.print_header(s=('> '+self.root.description+' <'))
+        misc.print_header(s=('> Download: '+self.root.dl+' <'))
+        misc.print_header(s=('>  SD card: '+self.root.sd+' <'))
 
         self.seg = []
         for (name, config) in config.items():
@@ -268,13 +223,13 @@ class Config:
         print("Auto setup sd-card as config in: ", self.root.sd)
 
         try:
-            puts(s=colored.blue("Clean previous build in "+self.root.sd))
+            misc.print_level1(s=("Clean previous build in "+self.root.sd))
             shutil.rmtree(os.path.join(self.root.sd))
         except OSError as e:
             print("Error: %s - %s." % (e.filename, e.strerror))
 
         for (index, seg) in enumerate(self.seg):
-            puts(s=colored.cyan(str(index+1)+". "), newline=False)
+            misc.print_level2(s=(str(index+1)+". "), newline=False)
             seg.build()
 
 

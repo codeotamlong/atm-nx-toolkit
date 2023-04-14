@@ -2,8 +2,15 @@
     "tab": 2,
     "dl": "./download",
     "sd": "./sdcard",
-    "custom-logo":{
-        "src":"./assets/switch-logo",
-        "dst":"atmosphere/exefs_patches"
+    "custom-bootlogo":{
+        "src":"./assets/custom-bootlogo",
+        "default":"default.png ",
+        "dst":"atmosphere/exefs_patches",
+        "dir":"bootlogo_patches"
+    },
+    "custom-splash":{
+        "src":"./assets/custom-splash",
+        "default":"default.png ",
+        "dst":"./atmosphere/package3"
     }
 }
