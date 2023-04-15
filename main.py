@@ -35,18 +35,7 @@ def display_banner():
 
 
 def get_choice():
-    # Let users know what they can do.
 
-    # inst_options = [{'selector': '1', 'prompt': 'SD Setup', 'return': 'sd-setup'},
-    #                 {'selector': '2', 'prompt': 'Firmware Download',
-    #                     'return': 'fw-dload'},
-    #                 {'selector': '3', 'prompt': 'Atmosphere-NS Utilities',
-    #                     'return': 'atm-utility'},
-    #                 {'selector': '4', 'prompt': 'Cheat Management',
-    #                     'return': 'cheat-mng'},
-    #                 {'selector': 'q', 'prompt': 'Quit', 'return': 'quit'}]
-
-    # return prompt.options("What would you like to do?", inst_options)
     return src.misc.get_choice(
         question="What would you like to do?",
         options=[
@@ -55,8 +44,7 @@ def get_choice():
             {'selector': '3', 'desc': 'Atmosphere-NS Utilities', 'return': 'atm-utility'},
             {'selector': '4', 'desc': 'Cheat Management','return': 'cheat-mng'},
             {'selector': 'q', 'desc': 'Quit', 'return': 'quit'}
-        ],
-        answer="My choice"
+        ]
     )
 
 

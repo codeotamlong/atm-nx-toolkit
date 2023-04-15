@@ -31,13 +31,34 @@ def print_warning(s, newline=True):
 def print_error(s, newline=True):
     puts(s=colored.red(s), newline=newline)
 
-def get_choice(question="What would you like to do?", options=[], answer="What would you like to do?", default="0"):
-    puts(s=question)
-    for o in options:
-        puts(s=("[%*s]%s") %(2, o["selector"], o["desc"]))
+def get_choice(question="What would you like to do?", options=[], answer="What would you like to do?", default=None):
+    class Choice:
+        def __init__(self, option):
+            self.selector = str(option["selector"])
+            self.desc = option["desc"]
+            self.return_ = option["return"]
+
+        def show(self, placeholder=0):
+            puts(s=("[%*s]%s") %(placeholder, self.selector, self.desc))
     
-    choice = prompt.query(answer, default=str(default), validators=[validators.IntegerValidator()])
-    return choice
+    puts(s=question)
+    o_list = []
+    input_list = []
+    for o in options:
+        choice_obj = Choice(o)
+        o_list.append(choice_obj)
+        input_list.append(choice_obj.selector)
+
+    for o in o_list:
+        o.show()
+    
+    choice = None
+    while choice not in input_list:
+        choice = prompt.query(answer, default=default)
+
+    for o in o_list:
+        if o.selector == choice:
+            return o.return_
 
 '''
 DOWNLOAD
