@@ -9,7 +9,29 @@ from clint.textui import prompt, validators
 
 from .. import misc
 
+class CheatList:
+    class Cheat:
+        def __init__(self, string):
+            # print(string)
+            lines = string.split("\n")
+            self.address = []
+            for (i, line) in enumerate(lines):
+                if i==0:
+                    self.desc = line
+                else:
+                    self.address.append(line)
+            # print(self.desc)
 
+
+    def __init__(self, textfile):
+        with open(Path(textfile), encoding="utf8",mode= 'r') as cheat:
+            lines = cheat.read().split("\n\n")
+        self.cheat = []
+        for (i, line) in enumerate(lines):
+            if i==0:
+                self.desc = line
+            else:
+                self.cheat.append(self.Cheat(line))
 def main(config):
     choice = misc.get_choice(
         question="Select your work",
@@ -71,27 +93,43 @@ def main(config):
 
         qarg = prompt.query('Game name:')
         query = qarg.split(" ")
-        ret = []
-        
+        found_by_name = []
         for tid in tid_db:
             if all([x.lower() in tid["title"].lower() for x in query]):
-                ret.append(tid)
-        print(ret)
+                found_by_name.append(tid)
+
         options = []
-        i=0
-        options.append({'selector':i, "desc":"Copy all", "return":"all"}) 
-        # for (index,tid) in ret.items():
+        # options.append({'selector':i, "desc":"Copy all", "return":"all"}) 
+        for (index,tid) in enumerate(found_by_name):
+            options.append({'selector':index+1, "desc":"[%s] %s"%(tid["id"],tid["title"]), "return":tid["id"]})
+        selected_tid = misc.get_choice(options=options)
 
-        #     options.append({'selector':index, "desc":"[%s] %s"%(,v), "return":k})
-        
-        # x = misc.get_choice(options=options)
+        if selected_tid == "all":
+            pass
+            # tid = prompt.query('Title ID:')
+            # shutil.copytree(
+            #     src=Path("./download/db/titles/%s/"%(tid)),
+            #     dst=Path("./sdcard/atmosphere/contents/%s/"%(tid))
+            #     )
+            # print ("Copy all to sdcard/atmospshere/contents/%s"%(tid))
+        else:
+            # result = []
+            filenames= os.listdir (Path("./download/db/titles/%s/cheats/"%(selected_tid)))
+            options=[]
+            index = 0
+            for filename in filenames: # loop through all the files and folders
+                if os.path.isfile(os.path.join(Path("./download/db/titles/%s/cheats/"%(selected_tid)), filename)): # check whether the current object is a folder or not
+                    # cheat = CheatList(os.path.join(Path("./download/db/titles/%s/cheats/"%(x)), filename))
+                    with open(os.path.join(Path("./download/db/titles/%s/cheats/"%(selected_tid)), filename), encoding="utf8",mode= 'r') as cheat:
+                        index+=1
+                        lines = cheat.read().split("\n\n")
+                        options.append({"selector":index, "desc":lines[0], "return":filename})
+            selected_version = misc.get_choice(options=options)
+            with open(os.path.join(Path("./download/db/titles/%s/cheats/"%(selected_tid)), selected_version), encoding="utf8",mode= 'r') as cheat:
+                cheat = CheatList(os.path.join(Path("./download/db/titles/%s/cheats/"%(selected_tid)), filename))
+                print(cheat.desc)
+            # print(result)
 
-        tid = prompt.query('Title ID:')
-        shutil.copytree(
-            src=Path("./download/db/titles/%s/"%(tid)), 
-            dst=Path("./sdcard/atmosphere/contents/")
-            )
-        print ("Copy all to sdcard/atmospshere/contents/")
     elif choice == "open-by-tid":
         tid = prompt.query('Title ID:')
         result = []

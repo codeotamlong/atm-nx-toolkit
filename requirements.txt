@@ -6,3 +6,4 @@ ips.py
 bs4
 patool 
 pyunpack
+unidecode
