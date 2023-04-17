@@ -92,7 +92,7 @@ class Config:
                 loader.exec_module(mymodule)
 
                 # Use mymodule
-                with indent(indent=self.root.tab, quote="-"):
+                with indent(indent=2, quote="-"):
                     if "description" in self.function:
                         puts(s=self.function["description"])
                     else:
@@ -109,7 +109,7 @@ class Config:
                 self.line = ini["line"] if "line" in ini else []
 
             def build(self):
-                with indent(indent=self.root.tab,):
+                with indent(indent=2):
                     misc.print_level3(s=("Create ")+self.sd)
 
                 src = self.line
@@ -156,7 +156,7 @@ class Config:
             def download(self):
 
                 if len(self.name) > 0:
-                    with indent(indent=self.root.tab):
+                    with indent(indent=2):
                         misc.print_level3(s=("- Download ")+self.name)
 
                 if len(self.description) > 0:

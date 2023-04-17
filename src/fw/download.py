@@ -68,7 +68,6 @@ def download(url):
     return
 
 def run(url, class_):
-    # url = 'https://darthsternie.net/switch-firmwares/'
     dt = Scraper(url=url)
     dt.fetch(class_) 
     return dt

@@ -1,7 +1,9 @@
 import os
 import re
 from pathlib import Path
+import urllib
 from string import Template
+import pyunpack
 
 from urllib.parse import unquote
 import requests
@@ -31,7 +33,7 @@ def print_warning(s, newline=True):
 def print_error(s, newline=True):
     puts(s=colored.red(s), newline=newline)
 
-def get_choice(question="What would you like to do?", options=[], answer="What would you like to do?", default=None):
+def get_choice(question="What would you like to do?", options=[], answer="Select", default=None):
     class Choice:
         def __init__(self, option):
             self.selector = str(option["selector"])
@@ -41,6 +43,7 @@ def get_choice(question="What would you like to do?", options=[], answer="What w
         def show(self, placeholder=0):
             puts(s=("[%*s]%s") %(placeholder, self.selector, self.desc))
     
+
     puts(s=question)
     o_list = []
     input_list = []
@@ -87,7 +90,40 @@ def download(url, dst="."):
 
     return ret
 
+def download_raw(url,filename, dst="."):
+    ret = []
 
+    r = requests.get(unquote(url), stream=True, allow_redirects=True)
+    if r.ok:
+        # filename = r.headers.get("Content-Disposition").split("filename=")[1]
+        if filename is None:
+            filename = url.split('/')[-1].replace(" ", "_")
+        dst = os.path.join(dst, filename)
+        puts(s="[No progress bar] Save "+filename+" to "+dst)
+        ret.append(filename)
+        with open(dst, 'wb') as f:
+           for chunk in r.iter_content(chunk_size=1024 * 8):
+                if chunk:
+                    f.write(chunk)
+                    f.flush()
+                    os.fsync(f.fileno())
+    else:  # HTTP status code 4XX/5XX
+        print("Download failed: status code {}\n{}".format(
+            r.status_code, r.text))
+
+    return ret
+
+def download_urllib(url, dst):
+    url = unquote(url)
+    # print(url)
+    # urllib.request.urlretrieve(url, dst)
+    print(url)
+    response = urllib.request.urlopen(url)
+    file = open(dst, 'wb')
+    file.write(response.read())
+    file.close()
+    print("Completed")
+        
 def download_github(repo, query, regex, dst="."):
     
     response = requests.get(get_github_api_url(repo, query))
@@ -114,3 +150,10 @@ def get_github_api_url(repo, query):
         'query': query
     })
     return url
+
+'''
+UNPACK
+'''
+
+def unrar(src, dst="."):
+    pyunpack.Archive(src).extractall(dst)

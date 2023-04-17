@@ -8,29 +8,31 @@ from .. import misc
 
 
 
-def launch(root, cfg):
+def launch(config):
     choice = misc.get_choice(
         options=[
-            {"selector":1, "desc":"Change boot logo (friedkeenan/switch-logo-patcher)", "return":"change-boot-logo"},
-            {"selector":2, "desc":"Insert custom splash (Atmosphere-NX/Atmosphere)", "return":"change-splash-screen"}
+            {"selector":1, "desc":"Change boot logo (friedkeenan/switch-logo-patcher)", "return":"custom-bootlogo"},
+            {"selector":2, "desc":"Insert custom splash (Atmosphere-NX/Atmosphere)", "return":"custom-splashscreen"}
         ]
     )
-    if choice == "change-boot-logo":
-        with open(Path("./cfg/custom-bootlogo.json"), 'r') as config_file:
-            patch_data = json.load(config_file)
-        print(patch_data["desc"])
-        patched_dir = prompt.query('Destination dir', default=os.path.join(root["sd"], root["custom-bootlogo"]["dst"], root["custom-bootlogo"]["dir"]), validators=[validators.PathValidator()])
-        new_logo = prompt.query('Image', default=os.path.join(root["custom-bootlogo"]["src"], root["custom-bootlogo"]["default"]), validators=[validators.PathValidator()])        
+    if choice == "custom-bootlogo":
+        patch_data = config["custom-bootlogo"]
+        misc.print_level3(s=patch_data["desc"])
+        patched_dir = prompt.query('Destination dir', default=os.path.join(config["sd"], patch_data["dst"], patch_data["dir"]), validators=[])
+        new_logo = prompt.query('Image', default=os.path.join(patch_data["src"], patch_data["default"]), validators=[validators.FileValidator()])        
         logo_patch.generate2(
             old_logo=None,
-            patches_dir=patched_dir,
-            new_logo=new_logo,
+            patches_dir=Path(patched_dir),
+            new_logo=Path(new_logo),
             patch_data=patch_data["patch_info"]
         )
-    elif choice == "change-splash-screen":
-        src = prompt.query('Source image', default=os.path.join(root["custom-splash"]["src"], root["custom-splash"]["default"]), validators=[validators.FileValidator()])
-        dst = prompt.query('Destination package3', default=os.path.join(root["sd"], root["custom-splash"]["dst"]), validators=[validators.FileValidator()])    
+        misc.print_success(s="Copy patched dir to %s"%(os.path.join(config["sd"], patch_data["dst"])))
+    elif choice == "custom-splashscreen":
+        splash_data=config["custom-splashscreen"]
+        src = prompt.query('Source image', default=os.path.join(splash_data["src"], splash_data["default"]), validators=[validators.FileValidator()])
+        dst = prompt.query('Destination package3', default=os.path.join(config["sd"], splash_data["dst"]), validators=[validators.FileValidator()])
         splash.insert(
-            src=src,
-            dst=dst
+            src=Path(src),
+            dst=Path(dst)
         )
+        misc.print_success(s="Overwrite patched package3 to %s"%(os.path.join(config["sd"], splash_data["dst"])))

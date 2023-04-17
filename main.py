@@ -34,8 +34,7 @@ def display_banner():
     ))
 
 
-def get_choice():
-
+def main_menu():
     return src.misc.get_choice(
         question="What would you like to do?",
         options=[
@@ -49,23 +48,24 @@ def get_choice():
 
 
 def get_nand_choice():
-    # Let users know what they can do.
-
-    inst_options = [{'selector': '1', 'prompt': 'EmuNAND', 'return': 'emunand'},
-                    {'selector': '2', 'prompt': 'SysNAND', 'return': 'sysnand'}]
-
-    return prompt.options("What would you like to do?", inst_options)
+    return src.misc.get_choice(
+        question="Select your NAND?",
+        options=[
+            {'selector': '1', 'desc': 'EmuNAND', 'return': 'emunand'},
+            {'selector': '2', 'desc': 'SysNAND', 'return': 'sysnand'}
+        ]
+    )
 
 
 def get_nsw_codename():
-    # Let users know what they can do.
-
-    inst_options = [{'selector': '1', 'prompt': 'Switch v1 (Unpatched): Need RCM Loader', 'return': 'erista-unpatched'},
-                    {'selector': '2',
-                        'prompt': 'Switch v1 (Patched)  : Need hard-mod (solderring) SX Core / HWFLY', 'return': 'erista-patched'},
-                    {'selector': '3', 'prompt': 'Switch v2/Lite/OLED  : Need hard-mod (solderring) HWFLY', 'return': 'mariko'}]
-
-    return prompt.options("What would you like to do?", inst_options)
+    return src.misc.get_choice(
+        question="Select your NX?",
+        options=[
+            {'selector': '1', 'desc': 'Switch v1 (Unpatched): Need RCM Loader', 'return': 'erista-unpatched'},
+            {'selector': '2', 'desc':  'Switch v1 (Patched)  : Need hard-mod (solderring) SX Core / HWFLY', 'return': 'erista-patched'},
+            {'selector': '3', 'desc': 'Switch v2/Lite/OLED  : Need hard-mod (solderring) HWFLY', 'return': 'mariko'}
+        ]
+    )
 
 
 def get_sd_config(nand, nsw):
@@ -122,47 +122,35 @@ def get_fw_dload_option(fw):
 
 ### MAIN PROGRAM ###
 with open(Path("./cfg/config.json"), 'r') as config_file:
-    root_cfg = json.load(config_file)
+    CONFIG = json.load(config_file)
 # Set up a loop where users can choose what they'd like to do.
 choice = ''
 display_banner()
 while choice != 'quit':
     # Respond to the user's choice.
     display_banner()
-    choice = get_choice()
-
+    choice = main_menu()
     if choice == 'sd-setup':
         nand = get_nand_choice()
         nsw = get_nsw_codename()
         if (nand is None) or (nsw is None):
             print("Bad choice")
-            input("Press Enter to continue...")
             continue
-        src.sd.setup.run(root_cfg, get_sd_config(nand, nsw))
-        input("Press Enter to continue...")
+        src.sd.setup.run(CONFIG, get_sd_config(nand, nsw))
     if choice == 'fw-dload':
-        with open(Path("./cfg/fw.json"), 'r') as config_file:
-            fw_config = json.load(config_file)
-            site = get_fw_site_choice(fw_config)
-            table = get_fw_table_choice(site)
-            data = src.fw.download.run(site["url"], table["class"])
-            version = get_fw_version_choice(data.firmware)
-            dl_link = get_fw_dload_option(version)
-            src.fw.download.open_(dl_link)
-        input("Press Enter to continue...")
+        site = get_fw_site_choice(CONFIG["fw-dload"])
+        table = get_fw_table_choice(site)
+        data = src.fw.download.run(site["url"], table["class"])
+        version = get_fw_version_choice(data.firmware)
+        dl_link = get_fw_dload_option(version)
+        src.fw.download.open_(dl_link)
     elif choice == 'atm-utility':
-        with open(Path("./cfg/atm-utility.json"), 'r') as config_file:
-            cfg = json.load(config_file)
-        src.utility.launcher.launch(root_cfg, cfg)
-        input("Press Enter to continue...")
+        src.utility.launcher.launch(CONFIG)
     elif choice == 'cheat-mng':
-        with open(Path("./cfg/atm-utility.json"), 'r') as config_file:
-            cfg = json.load(config_file)
-        src.cheat.manager.main()
-        input("Press Enter to continue...")
+        src.cheat.manager.main(CONFIG)
     elif choice == 'quit':
         print("\nThanks for playing. Bye.")
-        input("Press Enter to continue...")
     else:
         print("\nI didn't understand that choice.\n")
-        input("Press Enter to continue...")
+        
+    input("Press Enter to continue...")
