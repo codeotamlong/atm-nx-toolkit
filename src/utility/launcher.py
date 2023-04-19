@@ -9,7 +9,7 @@ from .. import misc
 
 
 def launch(config):
-    choice = misc.get_choice(
+    choice = misc.get_single_selection(
         options=[
             {"selector":1, "desc":"Change boot logo (friedkeenan/switch-logo-patcher)", "return":"custom-bootlogo"},
             {"selector":2, "desc":"Insert custom splash (Atmosphere-NX/Atmosphere)", "return":"custom-splashscreen"}

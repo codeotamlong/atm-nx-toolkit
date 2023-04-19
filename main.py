@@ -35,20 +35,21 @@ def display_banner():
 
 
 def main_menu():
-    return src.misc.get_choice(
+    return src.misc.get_single_selection(
         question="What would you like to do?",
         options=[
             {'selector': '1', 'desc': 'SD Setup', 'return': 'sd-setup'},
             {'selector': '2', 'desc': 'Firmware Download', 'return': 'fw-dload'},
-            {'selector': '3', 'desc': 'Atmosphere-NS Utilities', 'return': 'atm-utility'},
+            {'selector': '3', 'desc': 'Atmosphere-NX Utilities', 'return': 'atm-utility'},
             {'selector': '4', 'desc': 'Cheat Management','return': 'cheat-mng'},
             {'selector': 'q', 'desc': 'Quit', 'return': 'quit'}
-        ]
+        ],
+        two_column=True
     )
 
 
 def get_nand_choice():
-    return src.misc.get_choice(
+    return src.misc.get_single_selection(
         question="Select your NAND?",
         options=[
             {'selector': '1', 'desc': 'EmuNAND', 'return': 'emunand'},
@@ -58,7 +59,7 @@ def get_nand_choice():
 
 
 def get_nsw_codename():
-    return src.misc.get_choice(
+    return src.misc.get_single_selection(
         question="Select your NX?",
         options=[
             {'selector': '1', 'desc': 'Switch v1 (Unpatched): Need RCM Loader', 'return': 'erista-unpatched'},
@@ -79,9 +80,12 @@ def get_fw_site_choice(sites):
     inst_options = []
 
     for (i, s) in enumerate(sites):
-        inst_options.append({'selector': i, 'prompt': s["url"], 'return': i})
+        inst_options.append({'selector': i, 'desc': s["url"], 'return': i})
 
-    choice = prompt.options("What would you like to do?", inst_options)
+    choice = src.misc.get_single_selection(
+        question="What would you like to do?",
+        options=inst_options
+    )
     return sites[int(choice)]
 
 
@@ -90,10 +94,14 @@ def get_fw_table_choice(site):
     inst_options = []
 
     for (i, t) in enumerate(site["table"]):
-        inst_options.append({'selector': i, 'prompt': t['name'], 'return': i})
+        inst_options.append({'selector': i, 'desc': t['name'], 'return': i})
         # puts(s="["+str(i)+"] "+ t['name'])
 
-    choice = prompt.options("What would you like to do?", inst_options)
+    choice = src.misc.get_single_selection(
+        question="What would you like to do?",
+        options=inst_options,
+        answer="Select region:"
+    )
     return site["table"][int(choice)]
 
 
@@ -103,20 +111,30 @@ def get_fw_version_choice(table):
 
     for (i, fw) in enumerate(table):
         inst_options.append(
-            {'selector': i, 'prompt': '%-*s %s' % (40, fw.version, fw.md5), 'return': i})
+            {'selector': i, 'desc': '%-*s %s' % (40, fw.version, fw.md5), 'return': i})
         # puts(s="["+str(i)+"] "+ t['name'])
 
-    choice = prompt.options("What would you like to do?", inst_options)
+    choice = src.misc.get_single_selection(
+        question="What would you like to do?",
+        options=inst_options,
+        default="0",
+        answer="Select version [0: lastest]:"
+    )
     return table[int(choice)]
 
 
 def get_fw_dload_option(fw):
     puts("%s - %s - %s" % (fw.version, fw.filesize, fw.md5))
 
-    inst_options = [{'selector': '1', 'prompt': "mega.nz - Open web-browser to download manually", 'return': fw.mega_nz},
-                    {'selector': '2', 'prompt': "archive.org - Download automatically", 'return': fw.archive_org}]
+    inst_options = [{'selector': '1', 'desc': "mega.nz - Open web-browser (FASTER but MANUALLY)", 'return': fw.mega_nz},
+                    {'selector': '2', 'desc': "archive.org - Download here (SLOWER but AUTOMATICALLY)", 'return': fw.archive_org}]
 
-    choice = prompt.options("What would you like to do?", inst_options)
+    choice = src.misc.get_single_selection(
+        question="What would you like to do?",
+        options=inst_options,
+        default="1",
+        answer="Select download method [Rcmd: 1 - faster]:"
+    )
     return choice
 
 

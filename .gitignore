@@ -162,6 +162,7 @@ cython_debug/
 # Project Temp
 sdcard/
 download/
+db/
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json

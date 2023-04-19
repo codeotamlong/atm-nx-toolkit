@@ -25,7 +25,7 @@
         "github": {
           "repo": "Atmosphere-NX/Atmosphere",
           "regex": [
-            "atmosphere-.*-master-.*.zip",
+            "(atmosphere-[0-9\\.]{5}.*)(\\+hbl-[0-9\\.]{5}.*)(\\+hbmenu-[0-9\\.]{5}.*).zip",
             "fusee.bin"
           ]
         },

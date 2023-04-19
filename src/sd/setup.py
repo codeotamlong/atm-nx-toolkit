@@ -181,17 +181,16 @@ class Config:
                     full_path = os.path.join(self.dl, file)
                     src = Path(full_path)
                     if file.endswith(".zip"):
-                        misc.print_success(s=("Extract ") +
-                             src.name+" to "+self.root.sd)
+                        puts(s=("Extract ") + src.name+" to "+self.root.sd)
                         zip_obj = zipfile.ZipFile(src)  # create zipfile object
                         zip_obj.extractall(self.root.sd)  # extract file to dir
                         zip_obj.close()
                     elif (src.suffix in [".bin", ".nro", ".config", ".ovl"]):
-                        misc.print_success(s=("Move ") + src.name +
+                        puts(s=("Move ") + src.name +
                              " to "+self.sd, newline=False)
                         shutil.copy(src, os.path.join(self.sd, file))
                         if os.path.isfile(os.path.join(self.sd, file)):
-                            misc.print_level3(s=((" => Success")))
+                            misc.print_success(s=((" => Success")))
                     else:
                         misc.print_error(s=(" => Unknown file type. Skip!"))
                 return
