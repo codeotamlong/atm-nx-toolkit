@@ -183,7 +183,14 @@ def main(config):
                     index+=1
                     first_line = cheat.readline().strip()
                     options.append({"selector":index, "desc":"%s (Eg. %s)"%(filename, first_line), "return":filename})
-        selected_version = misc.get_single_selection(options=options)
+        options.append({"selector":"a", "desc":"Copy all", "return":"all"})
+        selected_version = misc.get_single_selection(options=options, default="a")
+
+        if selected_version == 'all':
+            for filename in os.listdir(str(tite_id_cheat_dir)): # loop through all the files and folders
+                if os.path.isfile(tite_id_cheat_dir.joinpath(filename)): # check whether the current object is a folder or not
+                    misc.copy(src=tite_id_cheat_dir.joinpath(filename), dst="./sdcard/atmosphere/contents/%s/cheats/"%selected_tid)
+            return
 
         ch_book = tite_id_cheat_dir.joinpath(selected_version)
         print("Open", ch_book)

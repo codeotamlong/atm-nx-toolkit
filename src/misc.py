@@ -1,4 +1,5 @@
 import os
+import shutil
 import re
 from pathlib import Path
 import urllib
@@ -256,3 +257,26 @@ UNPACK
 
 def unrar(src, dst="."):
     pyunpack.Archive(src).extractall(dst)
+
+'''
+FILE
+'''
+def copy(src, dst="."):
+    src = Path(src)
+    if not src.exists():
+        print_error("%s not found"%(str(src)))
+        return
+    
+    dst = Path(dst)
+    if not dst.exists():
+        print_error("%s not found"%(str(dst)))
+        print_warning("Create %s"%(str(dst.parent)))
+        dst.mkdir(parents=True, exist_ok=True)
+
+    puts(s=("Move ") + src.name + " to "+str(dst), newline=False)
+    shutil.copy(src, dst.joinpath(src.name))
+    if dst.joinpath(src.name).exists():
+        print_success(s=((" => Success")))
+    else:
+        print_error(s=(" => Unable to copy!"))
+    return
