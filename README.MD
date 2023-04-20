@@ -46,7 +46,15 @@ python main.py
 brew install carlocab/personal/unrar
 ```
 
-## Screenshot (Coming soon...)
+## Screenshot
+### Auto-setup SD Card
+![Auto-setup SD Card](/docs/auto-setup-sdcard.png)
+### Download Firmware
+![Download Firmware](/docs/download-fw-from-darthsternie.png)
+### Batch cheat-codes copy
+![Batch cheat-codes copy](/docs/batch-copy-cheatcodes.png)
+
+### More screenshots at [/docs/](/docs/)
 
 ## Authors
 It's me
@@ -59,6 +67,7 @@ This project is licensed under the MIT License - see the LICENSE.md file for det
 * [https://rentry.org/SwitchHackingIsEasy](https://rentry.org/SwitchHackingIsEasy)
 * [Atmosphere-NX](https://github.com/Atmosphere-NX/Atmosphere)
 * [GBATemp](https://gbatemp.net/forums/nintendo-switch.283/)
+* [Tinfoil.io](https://tinfoil.io/Download)
 * [RARLab](https://www.rarlab.com/rar_add.htm)
 * [kennethreitz-archive](https://github.com/kennethreitz-archive/clint/)
 * [friedkeenan](https://github.com/friedkeenan/switch-logo-patcher)
