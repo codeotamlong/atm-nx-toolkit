@@ -160,7 +160,7 @@ def download(url, dst="."):
         filename = url.split('/')[-1].replace(" ", "_")
         dst = Path(dst).joinpath(filename)
         dst.parent.mkdir(parents=True, exist_ok=True)
-        puts(s="[No progress bar] Save "+filename+" to "+str(dst))
+        puts(s="Save "+filename+" to "+str(dst))
         ret.append(filename)
         with open(dst, 'wb') as f:
             total_length = int(r.headers.get('content-length'))
@@ -241,6 +241,21 @@ def get_github_api_url(repo, query):
 '''
 FILES
 '''
+
+def is_exist(path=".", mkdir=False):
+    path = Path(path)
+    if not path.exists():
+        print_error("%s not found"%(str(path)))
+        if mkdir:
+            if path.suffix != '':
+                path.mkdir(parents=True, exist_ok=True)
+            else:
+                path.parent.mkdir(parents=True, exist_ok=True)
+            return True
+        return False
+    return True
+
+
 def write(src=[], dst="temp.txt"):
 
     if len(src) == 0:

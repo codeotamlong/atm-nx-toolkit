@@ -47,16 +47,17 @@ class Config:
             if "external" in segment:
                 for ext in segment["external"]:
                     self.external.append(self.External(self.root, ext))
+
+            self.verify =  segment["verify"] if "verify" in segment else []
             # self.External(segment["external"]) if "external" in segment else []
 
-        def build(self):
+        def build(self, verify=False):
             misc.print_level1(s=(self.description))
             puts(s='Download path: '+self.dl)
             puts(s=' SD card path: '+self.sd)
 
             if (len(self.component) > 0):
                 misc.print_level2(s=("Setup component(s)"))
-
                 for (component) in (self.component):
                     component.download()
                     component.build()
@@ -70,6 +71,27 @@ class Config:
                 misc.print_level2(s=("Run custom script(s) from external file"))
                 for ext in self.external:
                     ext.run()
+
+            if verify:
+                misc.print_level2(s=("Verify %s file(s)/folder(s):"%(len(self.verify))))
+                er = []
+                for v in self.verify:
+                    ret = Path(self.sd).joinpath(v)
+                    if misc.is_exist(ret):
+                        ret += colored.green(" => Found")
+                    else:
+                        er.append(ret)
+                        ret += colored.red(" => NOT Found")
+                    misc.print_level3(s=ret)
+                if len(er) > 0:
+                    misc.print_error("ERROR: You have to recheck again manually based on https://rentry.org/SwitchHackingIsEasy")
+                    misc.print_error("Not Found %s file(s)/folder(s)" %len(er))
+                    with indent(indent=2):
+                        for e in er:
+                            misc.print_error(str(e))
+                else:
+                    misc.print_success(s="Everything good! Move to next steps")
+
 
         class External:
             def __init__(self, root, external, **kwargs):
@@ -217,7 +239,7 @@ class Config:
                 self.seg.append(self.Segment(self.root, config))
                 # s.build()
 
-    def build(self):
+    def build(self, verify=False):
         print("Auto setup sd-card as config in: ", self.root.sd)
 
         try:
@@ -228,9 +250,9 @@ class Config:
 
         for (index, seg) in enumerate(self.seg):
             misc.print_level2(s=(str(index+1)+". "), newline=False)
-            seg.build()
+            seg.build(verify)
 
 
 def run(root, cfg):
     config = Config(root, cfg)
-    config.build()
+    config.build(True)
