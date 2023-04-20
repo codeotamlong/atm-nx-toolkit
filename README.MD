@@ -9,6 +9,7 @@ Because life is too short to do it manually!
 - [x] SD Setup: Auto download and unpack Atmosphere-NX and other stuff (Based on https://rentry.org/SwitchHackingIsEasy)
   - [x] EmuNAND / SysNAND
   - [x] Erista (Patched/Unpatched), Mariko
+  - [x] Verify after build
 - [x] Firmware download (Credit: [darthsternie.net](https://darthsternie.net/switch-firmwares/))
 - [x] Atmosphere-NX Utilities
   - [x] Change boot-logo (Credit: [friedkeenan](https://github.com/friedkeenan/switch-logo-patcher))
