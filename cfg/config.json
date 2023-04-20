@@ -1,6 +1,10 @@
 {
     "dl": "./download",
     "sd": "./sdcard",
+    "unrar": [
+        "lib/unrar",
+        "lib/UnRar.exe"
+    ],
     "fw-dload":[
         {
             "url":"https://darthsternie.net/switch-firmwares/",
@@ -53,16 +57,18 @@
         "dst":"./atmosphere/package3"
     },
     "cheat-mng":{
+        "batch-game-list":"cfg/gamelist.txt",
+        "sd":"atmosphere/contents/$titleid/cheats/",
         "cheat-db":{
             "desc": "GBATemp Database (Src: https://gbatemp.net/download/cheat-codes-sxos-and-ams-main-cheat-file-updated.36311/)",
             "url": "https://gbatemp.net/download/cheat-codes-sxos-and-ams-main-cheat-file-updated.36311/download",
-            "dst": "./db",
+            "dst": "db",
             "download": "titles.rar"
         },
         "title-db":{
             "desc": "Tinfoil Database (Src: https://tinfoil.io/Title/)",
             "url": "https://tinfoil.media/Title/ApiJson/?rating_content=&language=&category=&region=us&rating=0&_=1681710603564",
-            "dst": "./db",
+            "dst": "db",
             "download": "tinfoil-db.json",
             "db": "title-id.json"
         }

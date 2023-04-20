@@ -4,7 +4,9 @@ import re
 from pathlib import Path
 import urllib
 from string import Template
-import pyunpack
+# from . import pyunpack
+import zipfile
+import rarfile
 
 from urllib.parse import unquote
 import requests
@@ -60,11 +62,16 @@ def get_single_selection(question="What would you like to do?", options=[], answ
         input_list.append(choice_obj.selector)
 
     if two_column:
+        width = 0
+        for o in o_list:
+            if len(o.desc) > width:
+                width = len(o.desc)
+        width -= 5
         index = 0
-        while index < len(o_list)-1:
+        while index < len(o_list):
             puts(columns(
                 [(o_list[index].get_command()), 45],
-                [o_list[index+1].get_command(), 45]
+                [o_list[index+1].get_command() if index+1<len(o_list) else "", 45]
             ))
             index += 2
     else:
@@ -99,22 +106,21 @@ def get_multiple_selection(question="What would you like to do?", options=[], an
     for o in options:
         choice_obj = Choice(o)
         opt_list.append(choice_obj)
-        # input_list.append(choice_obj.selector)
 
     input_list = [o.selector for o in opt_list]
     ret_list = [o.return_ for o in opt_list]
     
     if two_column:
-        index = 0
         width = 0
         for o in opt_list:
             if len(o.desc) > width:
                 width = len(o.desc)
         width -= 5
-        while index < len(opt_list)-1:
+        index = 0
+        while index < len(opt_list):
             puts(columns(
-                [opt_list[index].get_command(), width],
-                [opt_list[index+1].get_command(), None]
+                [(opt_list[index].get_command()), 45],
+                [opt_list[index+1].get_command() if index+1<len(opt_list) else "", 45]
             ))
             index += 2
     else:
@@ -126,7 +132,6 @@ def get_multiple_selection(question="What would you like to do?", options=[], an
         choice = prompt.query(answer, default=default)
         choice = choice.split(" ")
         for c in choice:
-            print(c)
             if '-' in c:
                 cc = c.split("-")
                 for ccc in range(int(cc[0]), int(cc[1])+1):
@@ -139,7 +144,6 @@ def get_multiple_selection(question="What would you like to do?", options=[], an
     ret = []
     for c in choice:
         ret.append([x for x in opt_list if x.selector == c][0].return_)
-    # print (ret)
     return ret
 
 '''
@@ -235,12 +239,19 @@ def get_github_api_url(repo, query):
     return url
 
 '''
-WRITE FILE
+FILES
 '''
 def write(src=[], dst="temp.txt"):
 
+    if len(src) == 0:
+        print_warning("Nothing to write... Skip")
+        return
+    
     dst = Path(dst)
-    dst.parent.mkdir(parents=True, exist_ok=True)
+    if not dst.exists():
+        print_error("Destination %s not found"%(str(dst)))
+        print_warning("Create %s"%(str(dst.parent)))
+        dst.parent.mkdir(parents=True, exist_ok=True)
     
     with open(dst, "w") as f:  # Opens file and casts as f
         if type(src) is str:
@@ -251,30 +262,92 @@ def write(src=[], dst="temp.txt"):
             for (i, line) in enumerate(src):
                 f.write(line + ("\n" if i < (len(src)-1) else ""))
 
-'''
-UNPACK
-'''
-
-def unrar(src, dst="."):
-    pyunpack.Archive(src).extractall(dst)
-
-'''
-FILE
-'''
-def copy(src, dst="."):
+def unrar(src, dst=".", unrar_path=None):
     src = Path(src)
     if not src.exists():
-        print_error("%s not found"%(str(src)))
+        print_error("Source %s not found"%(str(src)))
         return
     
     dst = Path(dst)
     if not dst.exists():
-        print_error("%s not found"%(str(dst)))
-        print_warning("Create %s"%(str(dst.parent)))
+        print_error("Destination %s not found"%(str(dst)))
+        print_warning("Create %s"%(str(dst)))
         dst.mkdir(parents=True, exist_ok=True)
 
-    puts(s=("Move ") + src.name + " to "+str(dst), newline=False)
+    try:
+        unrar_path = Path(unrar_path)
+        if Path(unrar_path).exists():
+            rarfile.UNRAR_TOOL = Path(unrar_path)
+        puts(s=("Extract ") + src.name + " to "+str(dst)+" with "+ str(rarfile.UNRAR_TOOL))
+        with rarfile.RarFile(src) as rf:
+            rf.extractall(dst)
+            rf.close()
+    except Exception as ex:
+        print_error(s=str(ex))
+        return False
+    else:
+        print_success(s=" => Extract sucessfully")
+        return True
+    
+
+def unzip(src, dst="."):
+    src = Path(src)
+    if not src.exists():
+        print_error("Source %s not found"%(str(src)))
+        return
+    
+    dst = Path(dst)
+    if not dst.exists():
+        print_error("Destination %s not found"%(str(dst)))
+        print_warning("Create %s"%(str(dst)))
+        dst.mkdir(parents=True, exist_ok=True)
+    
+    try:
+        puts(s=("Extract ") + src.name + " to "+str(dst))
+        with zipfile.ZipFile(src) as zip_obj:
+            zip_obj.extractall(dst)
+    except Exception as ex:
+        print_error(str(ex))
+        return False
+    else:
+        print_success(s="Extract sucessfully")
+        return True
+
+
+def copy(src, dst="."):
+    src = Path(src)
+    if not src.exists():
+        print_error("Source %s not found"%(str(src)))
+        return
+    
+    dst = Path(dst)
+    if not dst.exists():
+        print_error("Destination %s not found"%(str(dst)))
+        print_warning("Create %s"%(str(dst)))
+        dst.mkdir(parents=True, exist_ok=True)
+
+    puts(s=("Move ") + src.name + " to "+str(dst))
     shutil.copy(src, dst.joinpath(src.name))
+    if dst.joinpath(src.name).exists():
+        print_success(s=((" => Success")))
+    else:
+        print_error(s=(" => Unable to copy!"))
+    return
+
+def copytree(src, dst="."):
+    src = Path(src)
+    if not src.exists():
+        print_error("Source %s not found"%(str(src)))
+        return
+    
+    dst = Path(dst)
+    if not dst.exists():
+        print_error("Destination %s not found"%(str(dst)))
+        print_warning("Create %s"%(str(dst)))
+        dst.mkdir(parents=True, exist_ok=True)
+
+    puts(s=("Copy dir ") + +str(src) + " to "+str(dst))
+    shutil.copytree(src, dst)
     if dst.joinpath(src.name).exists():
         print_success(s=((" => Success")))
     else:

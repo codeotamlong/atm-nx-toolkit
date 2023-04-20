@@ -1,11 +1,11 @@
 import os
 import json
 import re
-import shutil
-from unidecode import unidecode
+from string import Template
 from pathlib import Path
+from unidecode import unidecode
 from bs4 import BeautifulSoup
-from clint.textui import prompt, validators, colored
+from clint.textui import prompt, validators, indent
 
 from .. import misc
 
@@ -52,17 +52,14 @@ class CheatList:
             print(d)
 
     def get_cheat_list(self):
-        # for ch in self.cheat:
-        #     print(ch.desc)
         return self.cheat
 
 
 def main(config):
     options = []
     cheat_cfg = config["cheat-mng"]["cheat-db"]
+    cheat_sd_dir = Template(os.path.join(config["sd"], config["cheat-mng"]["sd"]))
     title_cfg = config["cheat-mng"]["title-db"]
-
-   
 
     if not Path(title_cfg["dst"]).joinpath(title_cfg["db"]).exists():
         options.append({"desc": "Not Found Title ID <<< MUST RUN", "selector":1, "return":"update-title-id"})
@@ -73,14 +70,14 @@ def main(config):
 
     cheat_dir = Path(cheat_cfg["dst"]).joinpath("titles")
     if (not cheat_dir.exists()) or (len(os.listdir (cheat_dir)) < 1):
-        options.append({"desc": colored.red("Not Found Cheat <<< MUST RUN"), "selector":2, "return":"update-cheatcode-db"})
+        options.append({"desc": "Not Found Cheat <<< MUST RUN", "selector":2, "return":"update-cheatcode-db"})
     else:
         options.append({"desc": "Update cheatcode (Currently: %s)"%(len(os.listdir (cheat_dir))), "selector":2, "return":"update-cheatcode-db"})
 
     
     options.append({"desc": "Search by name", "selector":3, "return":"search-by-name"})
     options.append({"desc": "Open by Title ID", "selector":4, "return":"open-by-tid"})
-
+    options.append({"desc": "Batch cheat copy", "selector":5, "return":"batch-copy-all"})
     choice = misc.get_single_selection(
         question="Select your work",
         options=options,
@@ -113,29 +110,33 @@ def main(config):
     elif choice == "update-cheatcode-db":
         cheat_cfg = config["cheat-mng"]["cheat-db"]
         misc.print_level3(s=cheat_cfg["desc"])
-        misc.download_raw(
-            url=cheat_cfg["url"], 
-            filename=cheat_cfg["download"],
-            dst=Path(cheat_cfg["dst"])
-        )
+        # misc.download_raw(
+        #     url=cheat_cfg["url"], 
+        #     filename=cheat_cfg["download"],
+        #     dst=Path(cheat_cfg["dst"])
+        # )
         downloaded_cheat = Path(cheat_cfg["dst"]).joinpath(cheat_cfg["download"])
-        try:
-            misc.unrar(src=downloaded_cheat, dst=Path(cheat_cfg["dst"]))
-        except Exception:
+        # try:
+        unrar_success = True
+        for ur_path in config["unrar"]:
+            unrar_success = misc.unrar(src=downloaded_cheat, dst=Path(cheat_cfg["dst"]), unrar_path=ur_path)
+            if unrar_success:
+                break
+        if not unrar_success:
             misc.print_error(s="Cannot extract %s"%(downloaded_cheat))
             misc.print_error(s="You might want extract manually %s"%(downloaded_cheat))
-            misc.print_clean(s="Properly structure %s/titles/[TIDs]/cheats/[BIDs]. Eg:"%(cheat_cfg["dst"]))
+            misc.print_clean(s="Properly structure %s/titles/[TIDs]/cheats/[BIDs].txt - Eg:"%(cheat_cfg["dst"]))
             misc.print_clean(s="%s"%(cheat_cfg["dst"]))
             misc.print_clean(s="  |-titles\\")
             misc.print_clean(s="    |-0123456789ABCDEA\\")
             misc.print_clean(s="      |-cheats\\")
-            misc.print_clean(s="        |-ABCDEF9876543210\\")
-            misc.print_clean(s="        |-ABCDEF9876543211\\")
+            misc.print_clean(s="        |-ABCDEF9876543210.txt")
+            misc.print_clean(s="        |-ABCDEF9876543211.txt")
             misc.print_clean(s="          |-..\\")
             misc.print_clean(s="    |-0123456789ABCDEB\\")
             misc.print_clean(s="      |-cheats\\")
-            misc.print_clean(s="        |-ABCDEF9876543210\\")
-            misc.print_clean(s="        |-ABCDEF9876543211\\")
+            misc.print_clean(s="        |-ABCDEF9876543210.txt")
+            misc.print_clean(s="        |-ABCDEF9876543211.txt")
             misc.print_clean(s="        |-..\\")
             misc.print_clean(s="    |-...")
             misc.print_clean(s="Usually, just need call 'Extract here' the downloaded %s"%(downloaded_cheat))
@@ -174,7 +175,6 @@ def main(config):
         selected_tid = misc.get_single_selection(options=options, answer="Select title")
 
         tite_id_cheat_dir = cheat_dir.joinpath(selected_tid, "cheats")
-        print(os.listdir(str(tite_id_cheat_dir)))
         options=[]
         index = 0
         for filename in os.listdir(str(tite_id_cheat_dir)): # loop through all the files and folders
@@ -189,7 +189,10 @@ def main(config):
         if selected_version == 'all':
             for filename in os.listdir(str(tite_id_cheat_dir)): # loop through all the files and folders
                 if os.path.isfile(tite_id_cheat_dir.joinpath(filename)): # check whether the current object is a folder or not
-                    misc.copy(src=tite_id_cheat_dir.joinpath(filename), dst="./sdcard/atmosphere/contents/%s/cheats/"%selected_tid)
+                    misc.copy(
+                        src=tite_id_cheat_dir.joinpath(filename), 
+                        dst=cheat_sd_dir.substitute({"titleid": selected_tid})
+                    )
             return
 
         ch_book = tite_id_cheat_dir.joinpath(selected_version)
@@ -227,7 +230,10 @@ def main(config):
                 written_str.append(p)
             if (i < len(ch_selections)-1):
                 written_str.append('')
-        misc.write(src=written_str, dst="./sdcard/atmosphere/contents/%s/cheats/%s" %(selected_tid, selected_version))
+        misc.write(
+            src=written_str, 
+            dst=os.path.join(cheat_sd_dir.substitute({"titleid": selected_tid}), selected_version)
+        )
 
     elif choice == "open-by-tid":
         selected_tid = prompt.query('Title ID:')
@@ -235,7 +241,7 @@ def main(config):
         cheat_cfg = config["cheat-mng"]["cheat-db"]
         cheat_dir = Path(cheat_cfg["dst"]).joinpath("titles")
         tite_id_cheat_dir = cheat_dir.joinpath(selected_tid, "cheats")
-        print(os.listdir(str(tite_id_cheat_dir)))
+
         options=[]
         index = 0
         for filename in os.listdir(str(tite_id_cheat_dir)): # loop through all the files and folders
@@ -280,4 +286,61 @@ def main(config):
                 written_str.append(p)
             if (i < len(ch_selections)-1):
                 written_str.append('')
-        misc.write(src=written_str, dst="./sdcard/atmosphere/contents/%s/cheats/%s" %(selected_tid, selected_version))
+        misc.write(
+            src=written_str, 
+            dst=os.path.join(cheat_sd_dir.substitute({"titleid": selected_tid}), selected_version)
+        )
+    elif choice == "batch-copy-all":
+        src = prompt.query('Source game list:', default=os.path.join(config["cheat-mng"]["batch-game-list"]), validators=[validators.FileValidator()])
+        with open(Path(src)) as f:
+            batchlist = f.readlines()
+
+        cheat_dir = Path(cheat_cfg["dst"]).joinpath("titles")
+        filenames= os.listdir (cheat_dir) # get all files' and folders' names in the current directory
+
+        cheat_id_db = []
+        for filename in filenames: # loop through all the files and folders
+            if os.path.isdir(os.path.join(cheat_dir, filename)): # check whether the current object is a folder or not
+                cheat_id_db.append(filename)
+        
+        with open(Path(title_cfg["dst"]).joinpath(title_cfg["db"]), encoding="utf8",mode= 'r') as f:
+            game_db = json.load(f)
+
+        misc.print_level3(s="There are %s/%s title id has cheat"%(len(cheat_id_db), len(game_db)))
+
+        for name in batchlist:
+            misc.print_level2("Search for: "+name.strip())
+            query = name.strip().split(" ")
+            
+            found_by_name = []
+            for game in game_db:
+                if all([x.lower() in game["title"].lower() for x in query]):
+                    found_by_name.append(game)
+
+            options = []
+            index = 0
+            for (tid) in (found_by_name):
+                if tid["id"] in filenames:
+                    index +=1
+                    options.append({"id": tid["id"], "title":tid["title"]})
+            with indent(indent=2):
+                if len(options) < 1:
+                    misc.print_error(s="Not found title keywords! Skip...")
+                    continue
+                elif len(options) > 1:
+                    misc.print_error(f"Found %s titles contain keywords - MUST more details! Skip..."%len(options))
+                    for g in options:
+                        misc.print_warning(f"%s: %s"%(g["id"], g["title"]))
+                    continue
+                misc.print_success(f"Found ONE title: %s"%options[0]["title"])
+            
+            selected_tid = options[0]["id"]
+            tite_id_cheat_dir = cheat_dir.joinpath(selected_tid, "cheats")
+            
+            for filename in os.listdir(str(tite_id_cheat_dir)): # loop through all the files and folders
+                if os.path.isfile(tite_id_cheat_dir.joinpath(filename)): # check whether the current object is a folder or not
+                    misc.copy(
+                        src=tite_id_cheat_dir.joinpath(filename), 
+                        dst=cheat_sd_dir.substitute({"titleid": selected_tid})
+                    )
+        pass

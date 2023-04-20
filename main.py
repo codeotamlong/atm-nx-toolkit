@@ -33,6 +33,31 @@ def display_banner():
         [(colored.magenta('')), 25]
     ))
 
+def display_quit_message():
+    # Clears the terminal screen, and displays a title bar.
+    os.system('cls||clear')
+
+    puts(columns(
+        ["", 17],
+        [(colored.green('******************************************************')), 60],
+        ["", 25]
+    ))
+    puts(columns(
+        ["", 17],
+        [(colored.green('***  https://github.com/codeotamlong/atm-nx-toolkit  ***')), 60],
+        ["", 25]
+    ))
+    puts(columns(
+        ["", 17],
+        [(colored.green('** *** **** Give me STAR★ if you like this **** *** **')), 60],
+        ["", 25]
+    ))
+    puts(columns(
+        ["", 17],
+        [(colored.green('***********************˗ˏˋ ★ ˎˊ˗**********************')), 60],
+        ["", 25]
+    ))
+
 
 def main_menu():
     return src.misc.get_single_selection(
@@ -167,8 +192,5 @@ while choice != 'quit':
     elif choice == 'cheat-mng':
         src.cheat.manager.main(CONFIG)
     elif choice == 'quit':
-        print("\nThanks for playing. Bye.")
-    else:
-        print("\nI didn't understand that choice.\n")
-        
+        display_quit_message()
     input("Press Enter to continue...")
