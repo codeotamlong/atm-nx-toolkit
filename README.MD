@@ -41,7 +41,7 @@ python main.py
 ```
 
 ## Help
-* Can not unrar on MacOS: May be need to install 'unrar'
+* Can not unrar on MacOS: May be need to install ```unrar```
 ```
 brew install carlocab/personal/unrar
 ```
