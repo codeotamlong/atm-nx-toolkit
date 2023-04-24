@@ -3,8 +3,7 @@
     "description": "ATMOSPHERE (Src: https://rentry.org/EristaSXCoreEmuNAND)",
     "dl": "cfw",
     "sd": ".",
-    "component": [
-      {
+    "component": [{
         "name": "SX Gear",
         "url": "https://web.archive.org/web/20210217231219/https://sx.xecuter.com/download/SX_Gear_v1.1.zip",
         "isDisabled": true,
@@ -25,7 +24,7 @@
         "github": {
           "repo": "Atmosphere-NX/Atmosphere",
           "regex": [
-            "atmosphere-.*-master-.*.zip",
+            "(atmosphere-[0-9\\.]{5}.*)(\\+hbl-[0-9\\.]{5}.*)(\\+hbmenu-[0-9\\.]{5}.*).zip",
             "fusee.bin"
           ]
         },
@@ -37,41 +36,61 @@
         "isDisabled": false
       }
     ],
-    "ini": [
-      {
+    "ini": [{
         "path": "bootloader/hekate_ipl.ini",
         "description": "Setup Hekate",
-        "line": [
-          "[config]",
-          "autoboot=0",
-          "autoboot_list=0",
-          "bootwait=3",
-          "backlight=100",
-          "autohosoff=0",
-          "autonogc=1",
-          "updater2p=0",
-          "bootprotect=0",
-          "",
-          "[Atmosphere CFW]",
-          "payload=bootloader/payloads/fusee.bin",
-          "icon=bootloader/res/icon_payload.bmp"
+        "config": [
+          {
+            "name": "config",
+            "value": {
+              "autoboot":"0",
+              "autoboot_list":"0",
+              "bootwait":"3",
+              "backlight":"100",
+              "autohosoff":"0",
+              "autonogc":"1",
+              "updater2p":"0",
+              "bootprotect":"0"
+            }
+          },
+          {
+            "name": "Atmosphere CFW (Fusee)",
+            "value": {
+              "payload":"bootloader/payloads/fusee.bin",
+              "icon":"bootloader/res/icon_payload.bmp"
+            }
+          },
+          {
+            "name": "CFW (EMUMMC)",
+            "value": {
+              "fss0": "atmosphere/package3",
+              "emummcforce": "1",
+              "atmosphere": "1",
+              "kip1patch": "nosigchk",
+              "icon": "bootloader/res/icon_switch.bmp"
+            }
+          }
         ]
       },
       {
         "path": "exosphere.ini",
-        "description": "Setup Exosphere - Hide Serial Number",
-        "line": [
-          "[exosphere]",
-          "debugmode=1",
-          "debugmode_user=0",
-          "disable_user_exception_handlers=0",
-          "enable_user_pmu_access=0",
-          "blank_prodinfo_sysmmc=0",
-          "blank_prodinfo_emummc=1",
-          "allow_writing_to_cal_sysmmc=0",
-          "log_port=0",
-          "log_baud_rate=115200",
-          "log_inverted=0"
+        "description": "Setup Exosphere - Hide EmuMMC Serial Number",
+        "config": [
+          {
+            "name": "exosphere",
+            "value": {  
+              "debugmode": "1",
+              "debugmode_user": "0",
+              "disable_user_exception_handlers": "0",
+              "enable_user_pmu_access": "0",
+              "blank_prodinfo_sysmmc": "0",
+              "blank_prodinfo_emummc": "1",
+              "allow_writing_to_cal_sysmmc": "0",
+              "log_port": "0",
+              "log_baud_rate": "115200",
+              "log_inverted": "0"
+            }
+          }
         ]
       },
       {
@@ -87,14 +106,13 @@
         ]
       }
     ],
-    "external":[
-      {
+    "external": [{
         "path": "custom.py",
         "description": "Rename hekate_ctcaer_x.x.x.bin to payload.bin.",
         "function": "rename",
         "args": {
           "regex": "hekate_ctcaer_.*.bin",
-          "src": "./sdcard",
+          "src": "sdcard",
           "dst": "payload.bin"
         }
       },
@@ -104,18 +122,55 @@
         "function": "copy",
         "args": {
           "regex": "fusee.bin",
-          "src": "./download/cfw",
-          "dst": "./sdcard/bootloader/payloads/"
+          "src": "sdcard",
+          "dst": "sdcard/bootloader/payloads/",
+          "move": "True"
         }
       }
+    ],
+    "verify":[
+      "atmosphere/config_templates/exosphere.ini",
+      "atmosphere/config_templates/override_config.ini",
+      "atmosphere/config_templates/stratosphere.ini",
+      "atmosphere/config_templates/system_settings.ini",
+      "atmosphere/exefs_patches/es_patches/",
+      "atmosphere/hbl.nsp",
+      "atmosphere/hbl_html/accessible-urls/accessible-urls.txt",
+      "atmosphere/hosts/default.txt",
+      "atmosphere/kip_patches/fs_patches/",
+      "atmosphere/package3",
+      "atmosphere/reboot_payload.bin",
+      "atmosphere/stratosphere.romfs",
+      "bootloader/hekate_ipl.ini",
+      "bootloader/patches.ini",
+      "bootloader/payloads/fusee.bin",
+      "bootloader/res/icon_payload.bmp",
+      "bootloader/res/icon_switch.bmp",
+      "bootloader/sys/emummc.kipm",
+      "bootloader/sys/l4t/bpmpfw_b01.bin",
+      "bootloader/sys/l4t/mtc_tbl_b01.bin",
+      "bootloader/sys/l4t/sc7entry.bin",
+      "bootloader/sys/l4t/sc7exit.bin",
+      "bootloader/sys/l4t/sc7exit_b01.bin",
+      "bootloader/sys/libsys_lp0.bso",
+      "bootloader/sys/libsys_minerva.bso",
+      "bootloader/sys/nyx.bin",
+      "bootloader/sys/res.pak",
+      "bootloader/sys/thk.bin",
+      "bootloader/update.bin",
+      "exosphere.ini",
+      "hbmenu.nro",
+      "payload.bin",
+      "switch/daybreak.nro",
+      "switch/haze.nro",
+      "switch/reboot_to_payload.nro"
     ]
   },
   "payload": {
     "description": "PAYLOAD(s) (https://rentry.co/DumpFirmware - Optional)",
     "dl": "payload",
     "sd": "bootloader/payloads/",
-    "component": [
-      {
+    "component": [{
         "name": "TegraExplorer",
         "github": {
           "repo": "suchmememanyskill/TegraExplorer",
@@ -146,8 +201,7 @@
     "description": "HOMEBREW(s) (Src: https://rentry.org/homebrewandmisc)",
     "dl": "homebrew",
     "sd": "switch",
-    "component": [
-      {
+    "component": [{
         "name": "All In One Switch Updater",
         "github": {
           "repo": "HamletDuFromage/AIO-switch-updater",
@@ -254,8 +308,7 @@
         "isDisabled": true
       }
     ],
-    "ini": [
-      {
+    "ini": [{
         "path": "./config/SimpleModManager/parameters.ini",
         "description": "Setup SimpleModManager to manage sysmodules (Src: https://rentry.org/ManageSysModules)",
         "line": [
@@ -318,8 +371,7 @@
     "description": "TESLA-OVERLAY(s) (Src: https://rentry.org/TeslaOverlay)",
     "dl": "overlay",
     "sd": "switch/.overlays/",
-    "component": [
-      {
+    "component": [{
         "name": "ovl-sysmodules",
         "github": {
           "repo": "WerWolv/ovl-sysmodules",
@@ -385,8 +437,7 @@
     "description": "SYS-MODULES (Personal)",
     "dl": "module",
     "sd": ".",
-    "component": [
-      {
+    "component": [{
         "name": "sys-con",
         "github": {
           "repo": "cathery/sys-con",

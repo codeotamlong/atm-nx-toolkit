@@ -180,14 +180,15 @@ def main(config):
 
     misc.print_level3(s="There are %s/%s Title IDs has cheat(s)"%(len(cheat_list), len(title_list)))
         
-    options.append({"desc": "Update"+("<= MUST RUN FIRST" if ((len(cheat_list)==0)or(len(cheat_list)==0)) else ""), "selector":1, "return":"update"})
-    options.append({"desc": "Search", "selector":2, "return":"search"})
+    options.append({"desc": "Update"+(" <= MUST RUN FIRST" if (len(cheat_list)==0) else ""), "selector":1, "return":"update"})
+    options.append({"desc": "Search by Title ID or keywords", "selector":2, "return":"search"})
     options.append({"desc": "Batch cheat copy", "selector":3, "return":"batch"})
     
     choice = misc.get_single_selection(
         question="Select your work",
         options=options,
-        two_column=True
+        two_column=True,
+        default="1" if len(cheat_list)==0 else "2"
     )
     if choice == "update":
         update_title_db(title_cfg)

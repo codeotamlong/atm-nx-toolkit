@@ -1,10 +1,9 @@
 {
   "cfw": {
-    "description": "ATMOSPHERE (Src: https://rentry.org/EristaSXCoreEmuNAND)",
+    "description": "ATMOSPHERE (Src: https://rentry.org/AtmosphereSysNAND)",
     "dl": "cfw",
     "sd": ".",
-    "component": [
-      {
+    "component": [{
         "name": "SX Gear",
         "url": "https://web.archive.org/web/20210217231219/https://sx.xecuter.com/download/SX_Gear_v1.1.zip",
         "isDisabled": true,
@@ -35,6 +34,107 @@
         "name": "SigPatches",
         "url": "https://sigmapatches.coomer.party/sigpatches.zip",
         "isDisabled": false
+      }
+    ],
+    "ini": [{
+        "path": "bootloader/hekate_ipl.ini",
+        "description": "Setup Hekate",
+        "config": [
+          {
+            "name": "config",
+            "value": {
+              "autoboot":"0",
+              "autoboot_list":"0",
+              "bootwait":"3",
+              "backlight":"100",
+              "autohosoff":"0",
+              "autonogc":"1",
+              "updater2p":"0",
+              "bootprotect":"0"
+            }
+          },
+          {
+            "name": "Atmosphere CFW (Fusee)",
+            "value": {
+              "payload":"bootloader/payloads/fusee.bin",
+              "icon":"bootloader/res/icon_payload.bmp"
+            }
+          },
+          {
+            "name": "CFW (EMUMMC)",
+            "value": {
+              "fss0": "atmosphere/package3",
+              "emummcforce": "1",
+              "atmosphere": "1",
+              "kip1patch": "nosigchk",
+              "icon": "bootloader/res/icon_switch.bmp"
+            }
+          },
+          {
+            "name": "Stock SysNAND",
+            "value": {
+              "fss0": "atmosphere/package3",
+              "stock": "1",
+              "emummc_force_disable": "1",
+              "icon": "bootloader/res/icon_switch.bmp"
+            }
+          }
+        ]
+      },
+      {
+        "path": "exosphere.ini",
+        "description": "Setup Exosphere - Hide EmuMMC Serial Number",
+        "config": [
+          {
+            "name": "exosphere",
+            "value": {  
+              "debugmode": "1",
+              "debugmode_user": "0",
+              "disable_user_exception_handlers": "0",
+              "enable_user_pmu_access": "0",
+              "blank_prodinfo_sysmmc": "1",
+              "blank_prodinfo_emummc": "0",
+              "allow_writing_to_cal_sysmmc": "0",
+              "log_port": "0",
+              "log_baud_rate": "115200",
+              "log_inverted": "0"
+            }
+          }
+        ]
+      },
+      {
+        "path": "atmosphere/hosts/default.txt",
+        "description": "Setup DNS MITM - Block Nintendo Servers",
+        "line": [
+          "# Block Nintendo Servers",
+          "127.0.0.1 *nintendo.*",
+          "127.0.0.1 *nintendo-europe.com",
+          "127.0.0.1 *nintendoswitch.*",
+          "95.216.149.205 *conntest.nintendowifi.net",
+          "95.216.149.205 *ctest.cdn.nintendo.net"
+        ]
+      }
+    ],
+    "external": [{
+        "path": "custom.py",
+        "description": "Rename hekate_ctcaer_x.x.x.bin to payload.bin.",
+        "function": "rename",
+        "args": {
+          "regex": "hekate_ctcaer_.*.bin",
+          "src": "sdcard",
+          "dst": "payload.bin"
+        }
+      },
+      {
+        "path": "custom.py",
+        "description": "Move fusee.bin to /bootloader/payloads/ folder.",
+        "function": "copy",
+        "args": {
+          "regex": "fusee.bin",
+          "src": "sdcard",
+          "dst": "sdcard/bootloader/payloads/",
+          "move": "True"
+        }
       }
     ],
     "verify":[
@@ -68,92 +168,18 @@
       "bootloader/sys/thk.bin",
       "bootloader/update.bin",
       "exosphere.ini",
-      "fusee.bin",
       "hbmenu.nro",
       "payload.bin",
       "switch/daybreak.nro",
       "switch/haze.nro",
       "switch/reboot_to_payload.nro"
-    ],
-    "ini": [
-      {
-        "path": "bootloader/hekate_ipl.ini",
-        "description": "Setup Hekate",
-        "line": [
-          "[config]",
-          "autoboot=0",
-          "autoboot_list=0",
-          "bootwait=3",
-          "backlight=100",
-          "autohosoff=0",
-          "autonogc=1",
-          "updater2p=0",
-          "bootprotect=0",
-          "",
-          "[Atmosphere CFW]",
-          "payload=bootloader/payloads/fusee.bin",
-          "icon=bootloader/res/icon_payload.bmp"
-        ]
-      },
-      {
-        "path": "exosphere.ini",
-        "description": "Setup Exosphere - Hide Serial Number",
-        "line": [
-          "[exosphere]",
-          "debugmode=1",
-          "debugmode_user=0",
-          "disable_user_exception_handlers=0",
-          "enable_user_pmu_access=0",
-          "blank_prodinfo_sysmmc=0",
-          "blank_prodinfo_emummc=1",
-          "allow_writing_to_cal_sysmmc=0",
-          "log_port=0",
-          "log_baud_rate=115200",
-          "log_inverted=0"
-        ]
-      },
-      {
-        "path": "atmosphere/hosts/default.txt",
-        "description": "Setup DNS MITM - Block Nintendo Servers",
-        "line": [
-          "# Block Nintendo Servers",
-          "127.0.0.1 *nintendo.*",
-          "127.0.0.1 *nintendo-europe.com",
-          "127.0.0.1 *nintendoswitch.*",
-          "95.216.149.205 *conntest.nintendowifi.net",
-          "95.216.149.205 *ctest.cdn.nintendo.net"
-        ]
-      }
-    ],
-    "external":[
-      {
-        "path": "custom.py",
-        "description": "Rename hekate_ctcaer_x.x.x.bin to payload.bin.",
-        "function": "rename",
-        "args": {
-          "regex": "hekate_ctcaer_.*.bin",
-          "src": "./sdcard",
-          "dst": "payload.bin"
-        }
-      },
-      {
-        "path": "custom.py",
-        "description": "Move fusee.bin to /bootloader/payloads/ folder.",
-        "function": "copy",
-        "args": {
-          "regex": "fusee.bin",
-          "src": "./download/cfw",
-          "dst": "./sdcard/bootloader/payloads/"
-        }
-      }
     ]
   },
   "payload": {
     "description": "PAYLOAD(s) (https://rentry.co/DumpFirmware - Optional)",
     "dl": "payload",
     "sd": "bootloader/payloads/",
-    "component": [
-      {
+    "component": [{
         "name": "TegraExplorer",
         "github": {
           "repo": "suchmememanyskill/TegraExplorer",
@@ -184,8 +210,7 @@
     "description": "HOMEBREW(s) (Src: https://rentry.org/homebrewandmisc)",
     "dl": "homebrew",
     "sd": "switch",
-    "component": [
-      {
+    "component": [{
         "name": "All In One Switch Updater",
         "github": {
           "repo": "HamletDuFromage/AIO-switch-updater",
@@ -292,8 +317,7 @@
         "isDisabled": true
       }
     ],
-    "ini": [
-      {
+    "ini": [{
         "path": "./config/SimpleModManager/parameters.ini",
         "description": "Setup SimpleModManager to manage sysmodules (Src: https://rentry.org/ManageSysModules)",
         "line": [
@@ -356,8 +380,7 @@
     "description": "TESLA-OVERLAY(s) (Src: https://rentry.org/TeslaOverlay)",
     "dl": "overlay",
     "sd": "switch/.overlays/",
-    "component": [
-      {
+    "component": [{
         "name": "ovl-sysmodules",
         "github": {
           "repo": "WerWolv/ovl-sysmodules",
@@ -423,8 +446,7 @@
     "description": "SYS-MODULES (Personal)",
     "dl": "module",
     "sd": ".",
-    "component": [
-      {
+    "component": [{
         "name": "sys-con",
         "github": {
           "repo": "cathery/sys-con",

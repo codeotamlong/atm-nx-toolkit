@@ -129,6 +129,7 @@ class Config:
                     self.root.sd, ini["path"] if "path" in ini else "./"+str(uuid.uuid1())+".ini")
                 self.description = ini["description"] if "description" in ini else "Create config.ini"
                 self.line = ini["line"] if "line" in ini else []
+                self.config = ini["config"] if "config" in ini else []
 
             def build(self):
                 with indent(indent=2):
@@ -140,10 +141,19 @@ class Config:
 
                 puts(s="Write "+str(len(src))+" lines(s) to "+str(dst))
                 with open(dst, "w") as f:  # Opens file and casts as f
-                    for (i, line) in enumerate(self.line):
-                        # Writing
-                        f.write(line + ("\n" if i < (len(self.line)-1) else ""))
-                    # File closed automatically
+                    if len(self.line) > 0:
+                        f.writelines([l+("\n" if i<len(self.line)-1 else "") for (i, l) in enumerate(self.line)])
+                    if len(self.config) > 0:
+                        for (i, cfg) in enumerate(self.config):
+                            if "name" in cfg:
+                                if i > 0:
+                                    f.write("\n\n")
+                                f.write("["+cfg["name"]+"]")
+                            else:
+                                misc.print_error(s='MUST have "name"')
+
+                            if "value" in cfg:
+                                f.writelines([("\n"+k+"="+v) for (k,v) in cfg["value"].items()])
                 return
 
         class Component:

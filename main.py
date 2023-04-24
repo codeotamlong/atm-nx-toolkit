@@ -79,23 +79,12 @@ def get_nand_choice():
         options=[
             {'selector': '1', 'desc': 'EmuNAND', 'return': 'emunand'},
             {'selector': '2', 'desc': 'SysNAND', 'return': 'sysnand'}
-        ]
+        ],
+        default="1"
     )
 
-
-def get_nsw_codename():
-    return src.misc.get_single_selection(
-        question="Select your NX?",
-        options=[
-            {'selector': '1', 'desc': 'Switch v1 (Unpatched): Need RCM Loader', 'return': 'erista-unpatched'},
-            {'selector': '2', 'desc':  'Switch v1 (Patched)  : Need hard-mod (solderring) SX Core / HWFLY', 'return': 'erista-patched'},
-            {'selector': '3', 'desc': 'Switch v2/Lite/OLED  : Need hard-mod (solderring) HWFLY', 'return': 'mariko'}
-        ]
-    )
-
-
-def get_sd_config(nand, nsw):
-    path = Path("/".join(["cfg", "sd", nand, nsw + ".json"]))
+def get_sd_config(nand):
+    path = Path("/".join(["cfg", "sd", nand +".json"]))
     with open(path, 'r') as config_file:
         cfg = json.load(config_file)
     return cfg
@@ -175,11 +164,10 @@ while choice != 'quit':
     choice = main_menu()
     if choice == 'sd-setup':
         nand = get_nand_choice()
-        nsw = get_nsw_codename()
-        if (nand is None) or (nsw is None):
+        if (nand is None):
             print("Bad choice")
             continue
-        src.sd.setup.run(CONFIG, get_sd_config(nand, nsw))
+        src.sd.setup.run(CONFIG, get_sd_config(nand))
     if choice == 'fw-dload':
         site = get_fw_site_choice(CONFIG["fw-dload"])
         table = get_fw_table_choice(site)
