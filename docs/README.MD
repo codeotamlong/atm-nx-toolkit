@@ -11,13 +11,15 @@
 
 ![Download Firmware](/docs/download-fw-from-darthsternie.png)
 
-4. Download Title ID data
+4. Update Title ID and Cheat codes
 
-![Download Title ID data](/docs/download-tinfoil-titleid-data.png)
+![Update Title ID and Cheat codes](/docs/update-titleid-and-cheatcodes.png)
 
-5. Download Cheatcodes collection
+5. Search cheatcode by Title ID and name
 
-![Download Cheatcodes collection](/docs/download-cheat-from-gbatemp.png)
+![Search cheatcode by Title ID](/docs/cheat-search-by-titleid.png)
+
+![Search cheatcode by name](/docs/cheat-search-by-name.png)
 
 6. Select cheat-codes to copy
 
