@@ -1,10 +1,6 @@
 {
     "dl": "./download",
     "sd": "./sdcard",
-    "unrar": [
-        "lib/unrar",
-        "lib/UnRar.exe"
-    ],
     "fw-dload":[
         {
             "url":"https://darthsternie.net/switch-firmwares/",
@@ -63,6 +59,7 @@
             "desc": "GBATemp Database (Src: https://gbatemp.net/download/cheat-codes-sxos-and-ams-main-cheat-file-updated.36311/)",
             "url": "https://gbatemp.net/download/cheat-codes-sxos-and-ams-main-cheat-file-updated.36311/download",
             "dst": "db",
+            "db": "cheatlist.json",
             "download": "titles.rar"
         },
         "title-db":{

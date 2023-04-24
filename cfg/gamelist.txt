@@ -1,4 +1,11 @@
-zelda breath
-pokemon
+zelda
+pokemon sword
+pokemon scarlet
 devil may cry 3
 bayonetta 3
+final fantasy
+01004BC0166CC000
+0100BC300CB48000
+0100000011D90000
+01004A4010FEA000
+0100A3D008C5C000

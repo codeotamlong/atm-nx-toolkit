@@ -7,7 +7,7 @@ from string import Template
 # from . import pyunpack
 import zipfile
 import rarfile
-
+from sys import platform
 from urllib.parse import unquote
 import requests
 from clint.textui import progress, puts, indent, colored, prompt,validators, columns
@@ -151,8 +151,6 @@ DOWNLOAD
 '''
 
 def download(url, dst="."):
-
-    
     ret = []
 
     r = requests.get(unquote(url), stream=True)
@@ -239,6 +237,31 @@ def get_github_api_url(repo, query):
     return url
 
 '''
+DATA STRUCTURE
+'''
+
+def unique(l=[]):
+    seen = set()
+    ret = []
+    for d in l:
+        l = []
+        # use sorted items to avoid {"a":1, "b":2} != {"b":2, "a":1} being
+        # different when getting the dicts items
+        for (a,b) in sorted(d.items()):
+            if isinstance(b,list):
+                l.append((a,tuple(b))) # convert lists to tuples
+            else:
+                l.append((a,b))
+
+        # convert list to tuples so you can put it into a set 
+        t = tuple(l)
+
+        if t not in seen:
+            seen.add(t)          # add the modified value
+            ret.append(d)   # add the original value
+    return ret
+
+'''
 FILES
 '''
 
@@ -247,9 +270,11 @@ def is_exist(path=".", mkdir=False):
     if not path.exists():
         print_error("%s not found"%(str(path)))
         if mkdir:
-            if path.suffix != '':
+            if path.suffix == '':
+                print_warning("Create dir: %s"%(str(path)))
                 path.mkdir(parents=True, exist_ok=True)
             else:
+                print_warning("Create dir: %s"%(str(path.parent)))
                 path.parent.mkdir(parents=True, exist_ok=True)
             return True
         return False
@@ -263,10 +288,7 @@ def write(src=[], dst="temp.txt"):
         return
     
     dst = Path(dst)
-    if not dst.exists():
-        print_error("Destination %s not found"%(str(dst)))
-        print_warning("Create %s"%(str(dst.parent)))
-        dst.parent.mkdir(parents=True, exist_ok=True)
+    is_exist(path=dst, mkdir=True)
     
     with open(dst, "w") as f:  # Opens file and casts as f
         if type(src) is str:
@@ -277,45 +299,43 @@ def write(src=[], dst="temp.txt"):
             for (i, line) in enumerate(src):
                 f.write(line + ("\n" if i < (len(src)-1) else ""))
 
-def unrar(src, dst=".", unrar_path=None):
+def unrar(src, dst=".", unrar="unrar"):
     src = Path(src)
-    if not src.exists():
+
+    if not is_exist(src):
         print_error("Source %s not found"%(str(src)))
         return
     
     dst = Path(dst)
-    if not dst.exists():
-        print_error("Destination %s not found"%(str(dst)))
-        print_warning("Create %s"%(str(dst)))
-        dst.mkdir(parents=True, exist_ok=True)
+    is_exist(path=dst, mkdir=True)
 
     try:
-        unrar_path = Path(unrar_path)
-        if Path(unrar_path).exists():
-            rarfile.UNRAR_TOOL = Path(unrar_path)
+        if platform.startswith('darwin'):
+            rarfile.UNRAR_TOOL = "lib/unrar"
+        elif platform.startswith('win32') or sys.platform.startswith('cygwin'):
+            pass
+        elif platform.startswith('linux'):
+            pass
+        
         puts(s=("Extract ") + src.name + " to "+str(dst)+" with "+ str(rarfile.UNRAR_TOOL))
         with rarfile.RarFile(src) as rf:
             rf.extractall(dst)
-            rf.close()
+
     except Exception as ex:
         print_error(s=str(ex))
         return False
     else:
         print_success(s=" => Extract sucessfully")
         return True
-    
 
 def unzip(src, dst="."):
     src = Path(src)
-    if not src.exists():
+    if not is_exist(src):
         print_error("Source %s not found"%(str(src)))
         return
     
     dst = Path(dst)
-    if not dst.exists():
-        print_error("Destination %s not found"%(str(dst)))
-        print_warning("Create %s"%(str(dst)))
-        dst.mkdir(parents=True, exist_ok=True)
+    is_exist(path=dst, mkdir=True)
     
     try:
         puts(s=("Extract ") + src.name + " to "+str(dst))
@@ -331,15 +351,12 @@ def unzip(src, dst="."):
 
 def copy(src, dst="."):
     src = Path(src)
-    if not src.exists():
+    if not is_exist(src):
         print_error("Source %s not found"%(str(src)))
         return
     
     dst = Path(dst)
-    if not dst.exists():
-        print_error("Destination %s not found"%(str(dst)))
-        print_warning("Create %s"%(str(dst)))
-        dst.mkdir(parents=True, exist_ok=True)
+    is_exist(path=dst, mkdir=True)
 
     puts(s=("Move ") + src.name + " to "+str(dst))
     shutil.copy(src, dst.joinpath(src.name))
@@ -351,15 +368,12 @@ def copy(src, dst="."):
 
 def copytree(src, dst="."):
     src = Path(src)
-    if not src.exists():
+    if not is_exist(src):
         print_error("Source %s not found"%(str(src)))
         return
     
     dst = Path(dst)
-    if not dst.exists():
-        print_error("Destination %s not found"%(str(dst)))
-        print_warning("Create %s"%(str(dst)))
-        dst.mkdir(parents=True, exist_ok=True)
+    is_exist(path=dst, mkdir=True)
 
     puts(s=("Copy dir ") + +str(src) + " to "+str(dst))
     shutil.copytree(src, dst)
