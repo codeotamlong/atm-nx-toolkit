@@ -1,4 +1,6 @@
-#!/usr/bin/python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import os
 import json
 from pathlib import Path
@@ -11,8 +13,6 @@ import src.cheat.manager
 import src.misc
 
 ### FUNCTIONS ###
-
-
 def display_banner():
     # Clears the terminal screen, and displays a title bar.
     os.system('cls||clear')

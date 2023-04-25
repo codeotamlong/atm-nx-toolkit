@@ -54,14 +54,14 @@
             }
           },
           {
-            "name": "Atmosphere CFW (Fusee)",
+            "name": "CFW on AnyMMC by fusee",
             "value": {
               "payload":"bootloader/payloads/fusee.bin",
               "icon":"bootloader/res/icon_payload.bmp"
             }
           },
           {
-            "name": "CFW (EMUMMC)",
+            "name": "Atmosphere on EmuMMC",
             "value": {
               "fss0": "atmosphere/package3",
               "emummcforce": "1",
@@ -201,7 +201,8 @@
     "description": "HOMEBREW(s) (Src: https://rentry.org/homebrewandmisc)",
     "dl": "homebrew",
     "sd": "switch",
-    "component": [{
+    "component": [
+      {
         "name": "All In One Switch Updater",
         "github": {
           "repo": "HamletDuFromage/AIO-switch-updater",
@@ -268,8 +269,7 @@
           "regex": [
             "NXThemesInstaller.nro"
           ]
-        },
-        "isDisabled": true
+        }
       },
       {
         "name": "themezer-nx",

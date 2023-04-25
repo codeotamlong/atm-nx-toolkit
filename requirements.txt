@@ -6,3 +6,5 @@ ips.py
 bs4
 rarfile
 unidecode
+patool
+pyunpack

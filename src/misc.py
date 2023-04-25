@@ -1,16 +1,17 @@
+from pyunpack import Archive
 import os
 import shutil
 import re
 from pathlib import Path
 import urllib
 from string import Template
-# from . import pyunpack
 import zipfile
 import rarfile
 from sys import platform
 from urllib.parse import unquote
 import requests
 from clint.textui import progress, puts, indent, colored, prompt,validators, columns
+
 
 '''
 ### CLI BEAUTY
@@ -290,7 +291,7 @@ def write(src=[], dst="temp.txt"):
     dst = Path(dst)
     is_exist(path=dst, mkdir=True)
     
-    with open(dst, "w") as f:  # Opens file and casts as f
+    with open(dst, "w", encoding='utf-8') as f:  # Opens file and casts as f
         if type(src) is str:
             print_warning(s="Print %s char(s) to %s"%(len(src), dst))
             f.write(src)
@@ -299,7 +300,7 @@ def write(src=[], dst="temp.txt"):
             for (i, line) in enumerate(src):
                 f.write(line + ("\n" if i < (len(src)-1) else ""))
 
-def unrar(src, dst=".", unrar="unrar"):
+def unrarfile(src, dst=".", unrar="unrar"):
     src = Path(src)
 
     if not is_exist(src):
@@ -320,6 +321,28 @@ def unrar(src, dst=".", unrar="unrar"):
         puts(s=("Extract ") + src.name + " to "+str(dst)+" with "+ str(rarfile.UNRAR_TOOL))
         with rarfile.RarFile(src) as rf:
             rf.extractall(dst)
+
+    except Exception as ex:
+        print_error(s=str(ex))
+        return False
+    else:
+        print_success(s=" => Extract sucessfully")
+        return True
+
+def unrar(src, dst=".", unrar="unrar"):
+    src = Path(src)
+
+    if not is_exist(src):
+        print_error("Source %s not found"%(str(src)))
+        return
+    
+    dst = Path(dst)
+    is_exist(path=dst, mkdir=True)
+
+    try:
+        
+        puts(s=("Extract ") + src.name + " to "+str(dst))
+        Archive(src).extractall(dst)
 
     except Exception as ex:
         print_error(s=str(ex))

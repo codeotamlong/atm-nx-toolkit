@@ -270,13 +270,26 @@ def main(config):
                 if all([x.lower() in game["title"].lower() for x in query]):
                     found_by_name.append(game)
 
-            options = []
+            have_cheat = []
+            no_cheat = []
             index = 0
             for (tid) in (found_by_name):
                 if tid["id"] in cheat_list:
                     index +=1
-                    options.append({'selector':index, "desc":"[%s] %s"%(tid["id"],tid["title"]), "return":tid["id"]})
-            selected_tid = misc.get_single_selection(options=options, answer="Select title")
+                    have_cheat.append({'selector':index, "desc":"[%s] %s"%(tid["id"],tid["title"]), "return":tid["id"]})
+                else:
+                    no_cheat.append(f"[%s] %s"%(tid["id"],tid["title"]))
+            
+            misc.print_clean(s="These Titles have no cheat! May be you want to do it manually")
+            with indent(indent=4):
+                for nc in no_cheat:
+                    misc.print_clean(s=nc)
+
+            selected_tid = misc.get_single_selection(
+                question="These Titles have cheats in database:",
+                options=have_cheat, 
+                answer="Select title"
+            )
 
             tite_id_cheat_dir = cheat_dir.joinpath(selected_tid, "cheats")
             options=[]
