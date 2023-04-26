@@ -16,7 +16,7 @@
 
 ![Execute](/docs/4.png)
 
-5. Result
+5. Result: Open and copy everything inside to SD-Card
 
 ![Execute](/docs/5.png)
 
