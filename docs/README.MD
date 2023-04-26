@@ -16,6 +16,10 @@
 
 ![Execute](/docs/4.png)
 
+5. Result
+
+![Execute](/docs/5.png)
+
 ## Screenshot
 1. Main menu
 
