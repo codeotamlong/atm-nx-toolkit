@@ -26,7 +26,7 @@ def print_level2(s, newline=True):
     puts(s=colored.blue(s), newline=newline)
 
 def print_level3(s, newline=True):
-    puts(s=colored.black(s), newline=newline)
+    puts(s=colored.white(s), newline=newline)
 
 def print_success(s, newline=True):
     puts(s=colored.green(s), newline=newline)
