@@ -1,3 +1,21 @@
+## Step-by-Step
+
+1. Download `atmosphere-nx-toolkit.zip` at https://github.com/codeotamlong/atmosphere-nx-toolkit/releases
+
+![Download](/docs/1.png)
+
+2. Extract `atmosphere-nx-toolkit.zip`
+
+![Extract](/docs/2.png)
+
+3. Run `atmosphere-nx-toolkit.exe`
+
+![Run](/docs/3.png)
+
+4. Select function
+
+![Execute](/docs/4.png)
+
 ## Screenshot
 1. Main menu
 
