@@ -81,11 +81,11 @@ def update_title_db(title_cfg):
 
 def update_cheat_db(cheat_cfg):
     misc.print_level3(s=cheat_cfg["desc"])
-    # misc.download_raw(
-    #     url=cheat_cfg["url"], 
-    #     filename=cheat_cfg["download"],
-    #     dst=Path(cheat_cfg["dst"])
-    # )
+    misc.download_raw(
+        url=cheat_cfg["url"], 
+        filename=cheat_cfg["download"],
+        dst=Path(cheat_cfg["dst"])
+    )
     downloaded_cheat = Path(cheat_cfg["dst"]).joinpath(cheat_cfg["download"])
 
     if not misc.unrarfile(src=downloaded_cheat, dst=Path(cheat_cfg["dst"])):
