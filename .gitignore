@@ -163,6 +163,8 @@ cython_debug/
 sdcard/
 download/
 db/
+output/
+
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json

@@ -311,12 +311,12 @@ def unrarfile(src, dst=".", unrar="unrar"):
     is_exist(path=dst, mkdir=True)
 
     try:
-        # if platform.startswith('darwin'):
-        #     rarfile.UNRAR_TOOL = "lib/unrar"
-        # elif platform.startswith('win32') or sys.platform.startswith('cygwin'):
-        #     pass
-        # elif platform.startswith('linux'):
-        #     pass
+        if platform.startswith('darwin'):
+            rarfile.UNRAR_TOOL = "unrar/unrar"
+        elif platform.startswith('win32') or sys.platform.startswith('cygwin'):
+            pass
+        elif platform.startswith('linux'):
+            pass
         
         puts(s=("Extract ") + src.name + " to "+str(dst)+" with "+ str(rarfile.UNRAR_TOOL))
         with rarfile.RarFile(src) as rf:

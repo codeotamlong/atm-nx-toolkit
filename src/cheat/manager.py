@@ -88,7 +88,7 @@ def update_cheat_db(cheat_cfg):
     )
     downloaded_cheat = Path(cheat_cfg["dst"]).joinpath(cheat_cfg["download"])
 
-    if not misc.unrar(src=downloaded_cheat, dst=Path(cheat_cfg["dst"])):
+    if not misc.unrarfile(src=downloaded_cheat, dst=Path(cheat_cfg["dst"])):
         misc.print_error(s="Cannot extract %s"%(downloaded_cheat))
         misc.print_error(s="You might want extract manually %s"%(downloaded_cheat))
         misc.print_clean(s="Properly structure %s/titles/[TIDs]/cheats/[BIDs].txt - Eg:"%(cheat_cfg["dst"]))

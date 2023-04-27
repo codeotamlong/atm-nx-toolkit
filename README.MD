@@ -1,4 +1,4 @@
-# ATM-NX-TOOLKIT
+# ATMOSPHERE-NX-TOOLKIT
 
 Automatically build SD Card for Atmosphere-NX, Homebrew, Overlay menu, cheat codes, .etc
 
