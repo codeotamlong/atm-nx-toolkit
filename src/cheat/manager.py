@@ -353,7 +353,6 @@ def main(config):
             )
 
     elif choice == "batch":
-        misc.print_level3(s="There are %s/%s title id has cheat"%(len(cheat_id_db), len(game_db)))
         src = prompt.query('Source game list:', default=os.path.join(config["cheat-mng"]["batch-game-list"]), validators=[validators.FileValidator()])
         with open(Path(src)) as f:
             batchlist = f.readlines()
@@ -364,7 +363,7 @@ def main(config):
             if is_title_id(line):
                 misc.print_clean("%s looks like Title ID"%line)
 
-                tnames = name_by_tid(tid=line, db=game_db)
+                tnames = name_by_tid(tid=line, db=title_list)
                 with indent(indent=2):
                     for tn in tnames:
                         misc.print_warning(s="%s: %s"%(tn["id"], tn["title"]))
@@ -373,7 +372,7 @@ def main(config):
                 
                 cheat_available = []
                 for t in tnames:
-                    if is_cheat_available(tid=t["id"], db=cheat_id_db):
+                    if is_cheat_available(tid=t["id"], db=cheat_list):
                         cheat_available.append(t)
                 if len(cheat_available) < 1:
                     misc.print_error(s="Cheat not found! Skip...")
@@ -401,10 +400,10 @@ def main(config):
                 query = line.split(" ")
                 misc.print_clean("This is keywords: "+str(query))
 
-                tid_by_name = get_title_id(keywords=query, db=game_db)
+                tid_by_name = get_title_id(keywords=query, db=title_list)
                 cheat_available = []
                 for (tid) in (tid_by_name):
-                    if is_cheat_available(tid=tid["id"], db=cheat_id_db):
+                    if is_cheat_available(tid=tid["id"], db=cheat_list):
                         cheat_available.append({"id": tid["id"], "title":tid["title"]})
                         
                 with indent(indent=2):
