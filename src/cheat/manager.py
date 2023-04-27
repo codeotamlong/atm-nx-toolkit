@@ -147,7 +147,7 @@ def name_by_tid(tid="", db=[]):
     return ret
 
 def is_cheat_available(tid, db=[]):
-    if len(tid) < 1:
+    if not is_title_id(s=tid):
         return False
 
     if len(db) < 1:
@@ -265,16 +265,13 @@ def main(config):
             query = query.split(" ")
             misc.print_clean("This is keywords: "+str(query))
 
-            found_by_name = []
-            for game in title_list:
-                if all([x.lower() in game["title"].lower() for x in query]):
-                    found_by_name.append(game)
-
+            found_by_name = get_title_id(keywords=query, db=title_list)
+            
             have_cheat = []
             no_cheat = []
             index = 0
             for (tid) in (found_by_name):
-                if tid["id"] in cheat_list:
+                if is_cheat_available(tid=tid["id"], db=cheat_list):
                     index +=1
                     have_cheat.append({'selector':index, "desc":"[%s] %s"%(tid["id"],tid["title"]), "return":tid["id"]})
                 else:
