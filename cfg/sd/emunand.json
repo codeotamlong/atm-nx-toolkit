@@ -188,7 +188,7 @@
             "Lockpick_RCM.bin"
           ]
         },
-        "isDisabled": false
+        "isDisabled": true
       },
       {
         "name": "FirmwareDump Script",
@@ -300,6 +300,7 @@
             "DBI.nro"
           ]
         },
+        "dst":"switch/dbi",
         "isDisabled": false
       },
       {
@@ -392,6 +393,16 @@
         "isDisabled": false
       },
       {
+        "name": "SaltyNX",
+        "github": {
+          "repo": "masagrator/SaltyNX",
+          "regex": [
+            "SaltyNX-.*.zip"
+          ]
+        },
+        "isDisabled": false
+      },
+      {
         "name": "ReverseNX-RT",
         "github": {
           "repo": "masagrator/ReverseNX-RT",
@@ -402,21 +413,11 @@
         "isDisabled": false
       },
       {
-        "name": "emuiibo",
-        "github": {
-          "repo": "XorTroll/emuiibo",
-          "regex": [
-            "emuiibo-v.*.zip"
-          ]
-        },
-        "isDisabled": true
-      },
-      {
-        "name": "SimpleModManager ",
+        "name": "SimpleModManager",
         "github": {
           "repo": "nadrino/SimpleModManager",
           "regex": [
-            "SimpleModManagerOverlay.ovl"
+            "SimpleModManager.nro"
           ]
         },
         "isDisabled": false
@@ -437,16 +438,7 @@
     "description": "SYS-MODULES (Personal)",
     "dl": "module",
     "sd": ".",
-    "component": [{
-        "name": "sys-con",
-        "github": {
-          "repo": "cathery/sys-con",
-          "regex": [
-            "sys-con-.*.zip"
-          ]
-        },
-        "isDisabled": false
-      },
+    "component": [
       {
         "name": "MissionControl",
         "github": {

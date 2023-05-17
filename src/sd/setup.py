@@ -36,7 +36,11 @@ class Config:
             if "component" in segment:
                 for c in segment["component"]:
                     self.component.append(self.Component(
-                        self.root, c, dl=self.dl, sd=self.sd))
+                        root=self.root,
+                        component=c,
+                        dl=self.dl,
+                        sd=os.path.join(root.sd, c["dst"]) if "dst" in c else self.sd
+                    ))
 
             self.ini = []
             if "ini" in segment:

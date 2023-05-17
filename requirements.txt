@@ -8,3 +8,4 @@ rarfile
 unidecode
 patool
 pyunpack
+auto-py-to-exe
