@@ -6,7 +6,6 @@ from pathlib import Path
 import urllib
 from string import Template
 import zipfile
-import rarfile
 from sys import platform
 from urllib.parse import unquote
 import requests
@@ -299,36 +298,6 @@ def write(src=[], dst="temp.txt"):
             print_warning(s="Print %s line(s) to %s"%(len(src), dst))
             for (i, line) in enumerate(src):
                 f.write(line + ("\n" if i < (len(src)-1) else ""))
-
-def unrarfile(src, dst=".", unrar="unrar"):
-    src = Path(src)
-
-    if not is_exist(src):
-        print_error("Source %s not found"%(str(src)))
-        return
-    
-    dst = Path(dst)
-    is_exist(path=dst, mkdir=True)
-
-    try:
-        # if platform.startswith('darwin'):
-        #     rarfile.UNRAR_TOOL = "unrar/unrar"
-        # elif platform.startswith('win32') or sys.platform.startswith('cygwin'):
-        #     pass
-        # elif platform.startswith('linux'):
-        #     pass
-        
-        puts(s=("Extract ") + src.name + " to "+str(dst)+" with "+ str(rarfile.UNRAR_TOOL))
-        with rarfile.RarFile(src) as rf:
-            for f in progress.bar(rf.infolist()):
-                rf.extract(f, dst)
-
-    except Exception as ex:
-        print_error(s=str(ex))
-        return False
-    else:
-        print_success(s=" => Extract sucessfully")
-        return True
 
 def unrar(src, dst=".", unrar="unrar"):
     src = Path(src)
